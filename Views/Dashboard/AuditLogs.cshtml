@@ -5,6 +5,13 @@
         ("Login", "Login"),
         ("LoginFailed", "Login Failed"),
         ("Lockout", "Lockout"),
+        ("Logout", "Logout"),
+        ("TwoFactorEnabled", "Two-Factor Enabled"),
+        ("TwoFactorDisabled", "Two-Factor Disabled"),
+        ("TwoFactorReset", "Two-Factor Reset"),
+        ("TwoFactorBrowserForgotten", "Browser Forgotten"),
+        ("TwoFactorDisableBlocked", "2FA Disable Blocked"),
+        ("TwoFactorResetBlocked", "2FA Reset Blocked"),
         ("ViewRecord", "View Record"),
         ("CreateRecord", "Create Record"),
         ("UpdateRecord", "Update Record"),
@@ -33,11 +40,6 @@
         filterActionLabel = "All Actions";
     }
 
-    var filterEntityLabel = entityTypeOptions.FirstOrDefault(x => x.Value == Model.FilterEntityType).Label;
-    if (string.IsNullOrWhiteSpace(filterEntityLabel))
-    {
-        filterEntityLabel = "All Entities";
-    }
     var visibleCountLabel = Model.HasFilters
         ? $"Showing {Model.AuditLogs.Count} of {Model.FilteredAuditLogs} filtered logs"
         : $"Showing {Model.AuditLogs.Count} of {Model.TotalAuditLogs} total logs";
@@ -283,6 +285,12 @@
             "Login" => "primary",
             "LoginFailed" => "danger",
             "Lockout" => "danger",
+            "TwoFactorEnabled" => "success",
+            "TwoFactorDisabled" => "warning",
+            "TwoFactorReset" => "warning",
+            "TwoFactorBrowserForgotten" => "secondary",
+            "TwoFactorDisableBlocked" => "danger",
+            "TwoFactorResetBlocked" => "danger",
             "ViewRecord" => "info",
             "CreateRecord" => "success",
             "UpdateRecord" => "warning",

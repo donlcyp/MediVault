@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using MediVault.Data;
+using MediVault.Services;
 
 namespace MediVault.Areas.Identity.Pages.Account.Manage;
 
@@ -16,13 +17,18 @@ public class TwoFactorAuthenticationModel : PageModel
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ILogger<TwoFactorAuthenticationModel> _logger;
+    private readonly AuditService _audit;
 
     public TwoFactorAuthenticationModel(
-        UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<TwoFactorAuthenticationModel> logger)
+        UserManager<ApplicationUser> userManager,
+        SignInManager<ApplicationUser> signInManager,
+        ILogger<TwoFactorAuthenticationModel> logger,
+        AuditService audit)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _logger = logger;
+        _audit = audit;
     }
 
     /// <summary>
@@ -82,6 +88,12 @@ public class TwoFactorAuthenticationModel : PageModel
         }
 
         await _signInManager.ForgetTwoFactorClientAsync();
+        await _audit.LogAsync(
+            user.Id,
+            "TwoFactorBrowserForgotten",
+            $"User {user.Email} forgot this browser for MFA.",
+            "User",
+            user.Email ?? user.Id);
         StatusMessage = "The current browser has been forgotten. When you login again from this browser you will be prompted for your 2fa code.";
         return RedirectToPage();
     }

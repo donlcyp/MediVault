@@ -164,8 +164,11 @@ public class DashboardController : Controller
     {
         await DbSeeder.EnsureSampleAuditLogsAsync(_context);
 
+        var normalizedAction = _auditQuery.NormalizeActionFilter(action);
+        var normalizedEntityType = _auditQuery.NormalizeEntityTypeFilter(entityType);
+
         var allAuditLogs = await _context.AuditLogs.CountAsync();
-        var query = _auditQuery.ApplyFilters(_context.AuditLogs.AsQueryable(), user, action, entityType, date);
+        var query = _auditQuery.ApplyFilters(_context.AuditLogs.AsQueryable(), user?.Trim(), normalizedAction, normalizedEntityType, date);
 
         var filteredRecords = await query.CountAsync();
         var totalPages = Math.Max(1, (int)Math.Ceiling((double)filteredRecords / pageSize));
@@ -183,9 +186,9 @@ public class DashboardController : Controller
             TotalPages = totalPages,
             TotalAuditLogs = allAuditLogs,
             FilteredAuditLogs = filteredRecords,
-            FilterUser = user ?? string.Empty,
-            FilterAction = action ?? string.Empty,
-            FilterEntityType = entityType ?? string.Empty,
+            FilterUser = user?.Trim() ?? string.Empty,
+            FilterAction = normalizedAction ?? string.Empty,
+            FilterEntityType = normalizedEntityType ?? string.Empty,
             FilterDate = date?.ToString("yyyy-MM-dd") ?? string.Empty
         });
     }
@@ -194,12 +197,25 @@ public class DashboardController : Controller
     [Authorize(Roles = Roles.SystemAdministrator)]
     public async Task<IActionResult> ExportAuditLogsCsv(string? user, string? action, string? entityType, DateTime? date)
     {
-        var query = _auditQuery.ApplyFilters(_context.AuditLogs.AsQueryable(), user, action, entityType, date);
+        var currentUser = await _userManager.GetUserAsync(User);
+        var normalizedAction = _auditQuery.NormalizeActionFilter(action);
+        var normalizedEntityType = _auditQuery.NormalizeEntityTypeFilter(entityType);
+        var query = _auditQuery.ApplyFilters(_context.AuditLogs.AsQueryable(), user?.Trim(), normalizedAction, normalizedEntityType, date);
 
         var logs = await query
             .OrderByDescending(x => x.Timestamp)
             .Take(5000)
             .ToListAsync();
+
+        if (currentUser != null)
+        {
+            await _audit.LogAsync(
+                currentUser.Id,
+                "Download",
+                "Exported audit logs CSV",
+                "AuditLog",
+                $"Filters: user={user?.Trim() ?? string.Empty}; action={normalizedAction ?? string.Empty}; entityType={normalizedEntityType ?? string.Empty}; date={date:yyyy-MM-dd}");
+        }
 
         var bytes = System.Text.Encoding.UTF8.GetBytes(_auditQuery.BuildCsv(logs));
         var fileName = $"medivault-audit-{DateTime.UtcNow:yyyyMMddHHmmss}.csv";
@@ -210,12 +226,25 @@ public class DashboardController : Controller
     [Authorize(Roles = Roles.SystemAdministrator)]
     public async Task<IActionResult> ExportAuditLogsPdf(string? user, string? action, string? entityType, DateTime? date)
     {
-        var query = _auditQuery.ApplyFilters(_context.AuditLogs.AsQueryable(), user, action, entityType, date);
+        var currentUser = await _userManager.GetUserAsync(User);
+        var normalizedAction = _auditQuery.NormalizeActionFilter(action);
+        var normalizedEntityType = _auditQuery.NormalizeEntityTypeFilter(entityType);
+        var query = _auditQuery.ApplyFilters(_context.AuditLogs.AsQueryable(), user?.Trim(), normalizedAction, normalizedEntityType, date);
 
         var logs = await query
             .OrderByDescending(x => x.Timestamp)
             .Take(200)
             .ToListAsync();
+
+        if (currentUser != null)
+        {
+            await _audit.LogAsync(
+                currentUser.Id,
+                "Download",
+                "Exported audit logs PDF",
+                "AuditLog",
+                $"Filters: user={user?.Trim() ?? string.Empty}; action={normalizedAction ?? string.Empty}; entityType={normalizedEntityType ?? string.Empty}; date={date:yyyy-MM-dd}");
+        }
 
         var bytes = _pdf.BuildAuditLogPdf(logs);
         var fileName = $"medivault-audit-{DateTime.UtcNow:yyyyMMddHHmmss}.pdf";

@@ -4,6 +4,36 @@ namespace MediVault.Services;
 
 public class AuditQueryService
 {
+    private static readonly HashSet<string> AllowedActions = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "Login",
+        "LoginFailed",
+        "Lockout",
+        "Logout",
+        "ViewRecord",
+        "CreateRecord",
+        "UpdateRecord",
+        "UpdateUserRole",
+        "DeleteRecord",
+        "Download",
+        "IntegrityFailure",
+        "ScheduleAppointment",
+        "RescheduleAppointment",
+        "CancelAppointment",
+        "GenerateBill",
+        "UpdateBilling",
+        "ExportInvoice"
+    };
+
+    private static readonly HashSet<string> AllowedEntityTypes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "User",
+        "PatientRecord",
+        "Appointment",
+        "BillingRecord",
+        "AuditLog"
+    };
+
     public IQueryable<AuditLog> ApplyFilters(
         IQueryable<AuditLog> query,
         string? userId,
@@ -34,6 +64,28 @@ public class AuditQueryService
         }
 
         return query;
+    }
+
+    public string? NormalizeActionFilter(string? action)
+    {
+        if (string.IsNullOrWhiteSpace(action))
+        {
+            return null;
+        }
+
+        action = action.Trim();
+        return AllowedActions.Contains(action) ? action : null;
+    }
+
+    public string? NormalizeEntityTypeFilter(string? entityType)
+    {
+        if (string.IsNullOrWhiteSpace(entityType))
+        {
+            return null;
+        }
+
+        entityType = entityType.Trim();
+        return AllowedEntityTypes.Contains(entityType) ? entityType : null;
     }
 
     public string BuildCsv(IEnumerable<AuditLog> logs)

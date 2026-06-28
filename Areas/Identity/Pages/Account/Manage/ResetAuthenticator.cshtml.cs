@@ -3,11 +3,13 @@
 
 using System;
 using System.Threading.Tasks;
+using MediVault.Constants;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using MediVault.Data;
+using MediVault.Services;
 
 namespace MediVault.Areas.Identity.Pages.Account.Manage;
 
@@ -16,15 +18,18 @@ public class ResetAuthenticatorModel : PageModel
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ILogger<ResetAuthenticatorModel> _logger;
+    private readonly AuditService _audit;
 
     public ResetAuthenticatorModel(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
-        ILogger<ResetAuthenticatorModel> logger)
+        ILogger<ResetAuthenticatorModel> logger,
+        AuditService audit)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _logger = logger;
+        _audit = audit;
     }
 
     /// <summary>
@@ -42,6 +47,17 @@ public class ResetAuthenticatorModel : PageModel
             return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
+        if (await _userManager.IsInRoleAsync(user, Roles.SystemAdministrator))
+        {
+            await _audit.LogAsync(
+                user.Id,
+                "TwoFactorResetBlocked",
+                $"Attempted to reset MFA for system administrator {user.Email}.",
+                "User",
+                user.Email ?? user.Id);
+            return Forbid();
+        }
+
         return Page();
     }
 
@@ -53,10 +69,27 @@ public class ResetAuthenticatorModel : PageModel
             return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
+        if (await _userManager.IsInRoleAsync(user, Roles.SystemAdministrator))
+        {
+            await _audit.LogAsync(
+                user.Id,
+                "TwoFactorResetBlocked",
+                $"Attempted to reset MFA for system administrator {user.Email}.",
+                "User",
+                user.Email ?? user.Id);
+            return Forbid();
+        }
+
         await _userManager.SetTwoFactorEnabledAsync(user, false);
         await _userManager.ResetAuthenticatorKeyAsync(user);
         var userId = await _userManager.GetUserIdAsync(user);
         _logger.LogInformation("User with ID '{UserId}' has reset their authentication app key.", user.Id);
+        await _audit.LogAsync(
+            userId,
+            "TwoFactorReset",
+            $"User {user.Email} reset authenticator enrollment.",
+            "User",
+            user.Email ?? userId);
 
         await _signInManager.RefreshSignInAsync(user);
         StatusMessage = "Your authenticator app key has been reset, you will need to configure your authenticator app using the new key.";

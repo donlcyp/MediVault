@@ -200,6 +200,16 @@ public static class DbSeeder
             },
             new AuditLog
             {
+                UserId = admin?.Id ?? "admin@medivault.com",
+                Action = "Download",
+                Description = "Exported audit logs CSV",
+                EntityType = "AuditLog",
+                Details = "System startup seed",
+                IpAddress = "127.0.0.1",
+                Timestamp = DateTime.UtcNow.AddHours(-1).AddMinutes(-40)
+            },
+            new AuditLog
+            {
                 UserId = doctor?.Id ?? "doctor@medivault.com",
                 Action = "ViewRecord",
                 Description = "Viewed patient record #1",
@@ -217,6 +227,36 @@ public static class DbSeeder
                 Details = "Vitals stable, oxygen saturation improving",
                 IpAddress = "127.0.0.1",
                 Timestamp = DateTime.UtcNow.AddMinutes(-30)
+            },
+            new AuditLog
+            {
+                UserId = doctor?.Id ?? "doctor@medivault.com",
+                Action = "ScheduleAppointment",
+                Description = "Scheduled follow-up appointment",
+                EntityType = "Appointment",
+                Details = "Follow-up in 2 weeks",
+                IpAddress = "127.0.0.1",
+                Timestamp = DateTime.UtcNow.AddMinutes(-20)
+            },
+            new AuditLog
+            {
+                UserId = admin?.Id ?? "admin@medivault.com",
+                Action = "GenerateBill",
+                Description = "Generated billing record",
+                EntityType = "BillingRecord",
+                Details = "Invoice #BILL-001",
+                IpAddress = "127.0.0.1",
+                Timestamp = DateTime.UtcNow.AddMinutes(-10)
+            },
+            new AuditLog
+            {
+                UserId = nurse?.Id ?? "nurse@medivault.com",
+                Action = "Logout",
+                Description = "Nurse signed out",
+                EntityType = "User",
+                Details = "Shift complete",
+                IpAddress = "127.0.0.1",
+                Timestamp = DateTime.UtcNow.AddMinutes(-5)
             });
 
         await context.SaveChangesAsync();

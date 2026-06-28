@@ -6,78 +6,207 @@
 }
 
 <partial name="_StatusMessage" for="StatusMessage" />
-<div class="settings-section-header mb-4">
-    <span class="settings-eyebrow">Required security step</span>
-    <h3>@ViewData["Title"]</h3>
-    <p class="text-muted mb-0">Connect an authenticator app to protect access to MediVault records.</p>
+
+<div class="mfa-setup-header">
+    <div class="mfa-setup-eyebrow">
+        <i class="bi bi-shield-lock-fill"></i>
+        <span>Required security step</span>
+    </div>
+    <h3 class="mfa-setup-title">Configure authenticator app</h3>
+    <p class="mfa-setup-subtitle">Connect an authenticator app to add a second layer of protection to your MediVault account.</p>
+</div>
+
+<!-- Step track -->
+<div class="mfa-step-track">
+    <div class="mfa-step-item mfa-step-done">
+        <div class="mfa-step-dot"><i class="bi bi-check-lg"></i></div>
+        <span>Install app</span>
+    </div>
+    <div class="mfa-step-line"></div>
+    <div class="mfa-step-item mfa-step-active">
+        <div class="mfa-step-dot">2</div>
+        <span>Scan QR</span>
+    </div>
+    <div class="mfa-step-line"></div>
+    <div class="mfa-step-item">
+        <div class="mfa-step-dot">3</div>
+        <span>Verify</span>
+    </div>
 </div>
 
 <div class="mfa-setup-grid">
-    <section class="settings-panel mfa-instructions">
-        <div class="settings-panel-title">
-            <span class="settings-step">1</span>
-            <div>
-                <h4>Install an authenticator</h4>
-                <p>Use Microsoft Authenticator or Google Authenticator on your phone.</p>
-            </div>
-        </div>
-        <div class="app-link-grid">
-            <a href="https://go.microsoft.com/fwlink/?Linkid=825072" class="settings-action-link">
-                <i class="bi bi-android2"></i> Microsoft Android
-            </a>
-            <a href="https://go.microsoft.com/fwlink/?Linkid=825073" class="settings-action-link">
-                <i class="bi bi-apple"></i> Microsoft iOS
-            </a>
-            <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&amp;hl=en" class="settings-action-link">
-                <i class="bi bi-android2"></i> Google Android
-            </a>
-            <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8" class="settings-action-link">
-                <i class="bi bi-apple"></i> Google iOS
-            </a>
-        </div>
 
-        <div class="settings-divider"></div>
+    <!-- Left panel: install + scan -->
+    <div class="mfa-left-col">
 
-        <div class="settings-panel-title">
-            <span class="settings-step">2</span>
-            <div>
-                <h4>Enter your setup key</h4>
-                <p>Use this key in the authenticator app. Spaces and casing do not matter.</p>
+        <!-- Step 1 -->
+        <section class="settings-panel mfa-step-panel" id="mfa-panel-install">
+            <div class="mfa-step-panel-header">
+                <div class="mfa-step-badge">1</div>
+                <div>
+                    <h4>Install an authenticator app</h4>
+                    <p>Download one of the apps below on your phone.</p>
+                </div>
             </div>
-        </div>
-        <div class="setup-key-box">
-            <span>@Model.SharedKey</span>
-        </div>
-        <div class="settings-note">
-            <i class="bi bi-qr-code"></i>
-            <span>QR generation can be enabled later. Manual key entry works now.</span>
-        </div>
-        <div id="qrCode"></div>
-        <div id="qrCodeData" data-url="@Model.AuthenticatorUri"></div>
-    </section>
+            <div class="mfa-app-grid">
+                <a href="https://go.microsoft.com/fwlink/?Linkid=825072" class="mfa-app-link" target="_blank" rel="noopener">
+                    <span class="mfa-app-icon mfa-app-ms"><i class="bi bi-microsoft"></i></span>
+                    <span class="mfa-app-info">
+                        <strong>Microsoft</strong>
+                        <small>Android</small>
+                    </span>
+                </a>
+                <a href="https://go.microsoft.com/fwlink/?Linkid=825073" class="mfa-app-link" target="_blank" rel="noopener">
+                    <span class="mfa-app-icon mfa-app-ms"><i class="bi bi-microsoft"></i></span>
+                    <span class="mfa-app-info">
+                        <strong>Microsoft</strong>
+                        <small>iOS</small>
+                    </span>
+                </a>
+                <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en" class="mfa-app-link" target="_blank" rel="noopener">
+                    <span class="mfa-app-icon mfa-app-google"><i class="bi bi-google"></i></span>
+                    <span class="mfa-app-info">
+                        <strong>Google</strong>
+                        <small>Android</small>
+                    </span>
+                </a>
+                <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8" class="mfa-app-link" target="_blank" rel="noopener">
+                    <span class="mfa-app-icon mfa-app-google"><i class="bi bi-google"></i></span>
+                    <span class="mfa-app-info">
+                        <strong>Google</strong>
+                        <small>iOS</small>
+                    </span>
+                </a>
+            </div>
+        </section>
 
-    <section class="settings-panel mfa-verify-panel">
-        <div class="settings-panel-title">
-            <span class="settings-step">3</span>
-            <div>
-                <h4>Verify the code</h4>
-                <p>Enter the six-digit code from your authenticator app.</p>
+        <!-- Step 2 -->
+        <section class="settings-panel mfa-step-panel mfa-qr-panel" id="mfa-panel-scan">
+            <div class="mfa-step-panel-header">
+                <div class="mfa-step-badge mfa-step-badge-active">2</div>
+                <div>
+                    <h4>Scan the QR code</h4>
+                    <p>Open your authenticator app, tap <strong>Add account</strong>, then scan the code below.</p>
+                </div>
             </div>
-        </div>
-        <form id="send-code" method="post" class="settings-form">
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
-            <div class="form-floating mb-3 account-floating">
-                <input asp-for="Input.Code" class="form-control form-input-custom" autocomplete="off" inputmode="numeric" placeholder="123456" />
-                <label asp-for="Input.Code" class="control-label form-label">Verification Code</label>
-                <span asp-validation-for="Input.Code" class="text-danger small"></span>
+
+            <div class="mfa-qr-layout">
+                <div class="mfa-qr-frame">
+                    <div class="mfa-qr-corner mfa-qr-corner-tl"></div>
+                    <div class="mfa-qr-corner mfa-qr-corner-tr"></div>
+                    <div class="mfa-qr-corner mfa-qr-corner-bl"></div>
+                    <div class="mfa-qr-corner mfa-qr-corner-br"></div>
+                    @if (!string.IsNullOrEmpty(Model.QrCodeImage))
+                    {
+                        <img src="data:image/png;base64,@Model.QrCodeImage"
+                             alt="Scan this QR code with your authenticator app"
+                             class="mfa-qr-img" />
+                    }
+                    else
+                    {
+                        <div class="mfa-qr-placeholder"><i class="bi bi-qr-code"></i></div>
+                    }
+                </div>
+                <div class="mfa-qr-instructions">
+                    <div class="mfa-instruction-step">
+                        <span class="mfa-instruction-num">1</span>
+                        <span>Open your authenticator app</span>
+                    </div>
+                    <div class="mfa-instruction-step">
+                        <span class="mfa-instruction-num">2</span>
+                        <span>Tap <strong>+</strong> or <strong>Add account</strong></span>
+                    </div>
+                    <div class="mfa-instruction-step">
+                        <span class="mfa-instruction-num">3</span>
+                        <span>Point camera at the QR code</span>
+                    </div>
+                </div>
             </div>
-            <button type="submit" class="w-100 btn btn-premium-primary py-3">
-                <i class="bi bi-shield-check"></i> Verify and Enable
-            </button>
-        </form>
-    </section>
+
+            <details class="mfa-manual-details">
+                <summary class="mfa-manual-summary">
+                    <i class="bi bi-keyboard"></i>
+                    Can't scan? Enter the key manually
+                </summary>
+                <div class="mfa-manual-body">
+                    <p class="mfa-manual-hint">Type this key into your authenticator app. Spaces and casing do not matter.</p>
+                    <div class="mfa-manual-key">
+                        <code id="mfa-shared-key">@Model.SharedKey</code>
+                        <button type="button" class="mfa-copy-btn" onclick="copyKey()" id="mfa-copy-btn" title="Copy key">
+                            <i class="bi bi-clipboard" id="mfa-copy-icon"></i>
+                        </button>
+                    </div>
+                </div>
+            </details>
+
+            <div id="qrCodeData" data-url="@Model.AuthenticatorUri" style="display:none;"></div>
+        </section>
+
+    </div>
+
+    <!-- Right panel: verify -->
+    <aside class="mfa-verify-col">
+        <section class="settings-panel mfa-verify-card" id="mfa-panel-verify">
+            <div class="mfa-step-panel-header">
+                <div class="mfa-step-badge">3</div>
+                <div>
+                    <h4>Verify the code</h4>
+                    <p>Enter the 6-digit code shown in your authenticator app right now.</p>
+                </div>
+            </div>
+
+            <form id="send-code" method="post" class="mfa-verify-form">
+                <div asp-validation-summary="ModelOnly" class="tfa-error-box" role="alert"></div>
+
+                <div class="mfa-code-field">
+                    <label class="mfa-code-label" for="Input_Code">
+                        <i class="bi bi-phone"></i>
+                        Code from your app
+                    </label>
+                    <input asp-for="Input.Code"
+                           class="mfa-code-input"
+                           autocomplete="one-time-code"
+                           inputmode="numeric"
+                           maxlength="7"
+                           placeholder="000 000"
+                           id="Input_Code" />
+                    <span asp-validation-for="Input.Code" class="tfa-field-error"></span>
+                </div>
+
+                <button type="submit" class="mfa-verify-btn" id="mfa-verify-submit">
+                    <i class="bi bi-shield-check"></i>
+                    Verify &amp; Enable 2FA
+                </button>
+            </form>
+
+            <div class="mfa-verify-note">
+                <i class="bi bi-info-circle"></i>
+                <span>Codes refresh every 30 seconds. Make sure your phone's time is accurate.</span>
+            </div>
+        </section>
+    </aside>
+
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Auto-format: insert space after 3 digits
+        document.querySelectorAll('.mfa-code-input, .tfa-code-input').forEach(function(input) {
+            input.addEventListener('input', function () {
+                let v = this.value.replace(/\D/g, '').slice(0, 6);
+                if (v.length > 3) v = v.slice(0, 3) + ' ' + v.slice(3);
+                this.value = v;
+            });
+        });
+
+        function copyKey() {
+            const key = document.getElementById('mfa-shared-key').textContent.trim();
+            navigator.clipboard.writeText(key.replace(/\s/g, '')).then(function() {
+                const icon = document.getElementById('mfa-copy-icon');
+                icon.className = 'bi bi-clipboard-check';
+                setTimeout(() => { icon.className = 'bi bi-clipboard'; }, 2000);
+            });
+        }
+    </script>
 }

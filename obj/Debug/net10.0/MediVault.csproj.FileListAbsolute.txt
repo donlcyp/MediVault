@@ -295,4 +295,6 @@ D:\C#\repos\MediVault\MediVault\bin\Debug\net10.0\MediVault.pdb
 D:\C#\repos\MediVault\MediVault\obj\Debug\net10.0\MediVault.genruntimeconfig.cache
 D:\C#\repos\MediVault\MediVault\obj\Debug\net10.0\ref\MediVault.dll
 D:\C#\repos\MediVault\MediVault\obj\Debug\net10.0\compressed\eakr6dd6z0-{0}-cr94of84mg-cr94of84mg.gz
-D:\C#\repos\MediVault\MediVault\obj\Debug\net10.0\compressed\zy7h3yvyrx-{0}-9p2axxelh9-9p2axxelh9.gz
+D:\C#\repos\MediVault\MediVault\obj\Debug\net10.0\MediVault.sourcelink.json
+D:\C#\repos\MediVault\MediVault\bin\Debug\net10.0\QRCoder.dll
+D:\C#\repos\MediVault\MediVault\obj\Debug\net10.0\compressed\zy7h3yvyrx-{0}-sjj2rc7b48-sjj2rc7b48.gz

@@ -1,6 +1,108 @@
-﻿@{
+@{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xxl-10">
+            <div class="card-custom p-4 p-md-5 mb-4">
+                <div class="d-flex align-items-start gap-3 flex-wrap">
+                    <div class="settings-hero-icon">
+                        <i class="bi bi-shield-lock-fill"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <span class="settings-eyebrow">Privacy Policy</span>
+                        <h1 class="mb-2">How MediVault handles your information</h1>
+                        <p class="text-muted mb-0" style="max-width: 62rem;">
+                            MediVault is designed to protect clinical, administrative, and security-related data.
+                            This page explains what we collect, how it is used, and the safeguards we apply to keep it secure.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-6 col-xl-4">
+                    <div class="card-custom h-100 p-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-database-fill text-gradient fs-4"></i>
+                            <h4 class="mb-0">Information we collect</h4>
+                        </div>
+                        <ul class="text-muted mb-0 ps-3">
+                            <li>Account details such as name, email, role, and login activity.</li>
+                            <li>Clinical records created by authorized staff.</li>
+                            <li>Audit trail events for access, updates, and exports.</li>
+                            <li>Device and IP information used for security monitoring.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xl-4">
+                    <div class="card-custom h-100 p-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-lock-fill text-gradient fs-4"></i>
+                            <h4 class="mb-0">How we use data</h4>
+                        </div>
+                        <ul class="text-muted mb-0 ps-3">
+                            <li>To authenticate users and enforce role-based access.</li>
+                            <li>To provide patient care, scheduling, and billing functions.</li>
+                            <li>To detect suspicious activity and preserve audit history.</li>
+                            <li>To support operational reporting and maintenance.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-md-12 col-xl-4">
+                    <div class="card-custom h-100 p-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-shield-check text-gradient fs-4"></i>
+                            <h4 class="mb-0">Security safeguards</h4>
+                        </div>
+                        <ul class="text-muted mb-0 ps-3">
+                            <li>Encrypted storage for sensitive records.</li>
+                            <li>Two-factor authentication for protected roles.</li>
+                            <li>Immutable audit logging for critical actions.</li>
+                            <li>Session controls and access restrictions by role.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-custom p-4 p-md-5 mt-4">
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <h3 class="mb-3">Your rights and controls</h3>
+                        <p class="text-muted mb-3">
+                            Authorized users can update account details through the profile and security settings pages.
+                            Access to patient and administrative data is limited to assigned roles and approved workflows.
+                        </p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge badge-role badge-doctor">Role-based access</span>
+                            <span class="badge badge-role badge-nurse">Protected sessions</span>
+                            <span class="badge badge-role badge-records">Audit visibility</span>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="settings-panel h-100">
+                            <div class="settings-panel-title">
+                                <span class="settings-step"><i class="bi bi-clock-history"></i></span>
+                                <div>
+                                    <h4>Retention and logging</h4>
+                                    <p>MediVault keeps records only as long as needed for care, compliance, and security review.</p>
+                                </div>
+                            </div>
+                            <p class="text-muted mb-0">
+                                Audit logs are maintained to support investigation, integrity checks, and accountability.
+                                When records are exported or accessed, the system records who performed the action and when it happened.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 text-center text-muted small">
+                If you want, I can tailor this page to your exact compliance requirements and organization policy language.
+            </div>
+        </div>
+    </div>
+</div>
