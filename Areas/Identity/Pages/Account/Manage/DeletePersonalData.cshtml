@@ -1,0 +1,43 @@
+@page
+@model DeletePersonalDataModel
+@{
+    ViewData["Title"] = "Delete Personal Data";
+    ViewData["ActivePage"] = ManageNavPages.PersonalData;
+}
+
+<div class="settings-section-header mb-4">
+    <span class="settings-eyebrow">Personal data</span>
+    <h3 class="mb-1">@ViewData["Title"]</h3>
+    <p class="text-muted mb-0">Download a copy of your account data or start a permanent deletion request.</p>
+</div>
+
+<div class="settings-panel settings-form-panel">
+    <div class="settings-panel-title">
+        <span class="settings-step"><i class="bi bi-shield-exclamation"></i></span>
+        <div>
+            <h4>Account removal</h4>
+            <p>Delete personal data only when you are sure the account is no longer needed.</p>
+        </div>
+    </div>
+
+    <div class="alert alert-warning border border-warning border-opacity-25 bg-transparent text-warning-emphasis" role="alert">
+        <strong>Deleting this data will permanently remove your account, and this cannot be recovered.</strong>
+    </div>
+
+    <form id="delete-user" method="post" class="settings-form">
+        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+        @if (Model.RequirePassword)
+        {
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="Please enter your password." />
+                <label asp-for="Input.Password" class="form-label"></label>
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+        }
+        <button class="btn btn-danger" type="submit">Delete data and close my account</button>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

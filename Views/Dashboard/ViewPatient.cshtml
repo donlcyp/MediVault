@@ -1,0 +1,145 @@
+@model MediVault.ViewModels.PatientRecordFormViewModel
+@{
+    ViewData["Title"] = "Patient Record Details";
+    var returnAction = ViewBag.ReturnAction as string ?? "Index";
+    var canEdit = (bool?)ViewBag.CanEdit ?? false;
+}
+
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row align-items-center mb-4 g-3">
+        <div class="col-md-8">
+            <h1 class="h2 mb-1 d-flex align-items-center gap-2">
+                <i class="bi bi-file-earmark-lock2 text-gradient"></i> 
+                <span>@Model.FirstName @Model.LastName</span>
+            </h1>
+            <p class="text-muted mb-0">Record File: <code class="text-gradient font-monospace">#@Model.Id.ToString("D4")</code> · Active Diagnosis: <span class="fw-semibold text-white">@Model.Diagnosis</span></p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <div class="d-inline-flex gap-2">
+                <a class="btn-premium-secondary py-2 px-3 text-decoration-none" asp-action="@returnAction">
+                    <i class="bi bi-arrow-left"></i> Dashboard
+                </a>
+                @if (canEdit)
+                {
+                    <a class="btn-premium-primary py-2 px-3 text-decoration-none" asp-action="EditPatient" asp-route-id="@Model.Id">
+                        <i class="bi bi-pencil-square"></i> Modify Record
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success border border-success border-opacity-10 bg-transparent text-success d-flex align-items-center gap-2 mb-4">
+            <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
+        </div>
+    }
+
+    <div class="row g-4">
+        <!-- Patient Metadata Card -->
+        <div class="col-lg-4">
+            <div class="card-custom h-100">
+                <div class="card-header bg-transparent d-flex align-items-center gap-2">
+                    <i class="bi bi-person-vcard text-gradient"></i>
+                    <h5 class="mb-0">Patient Profile Demographics</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex flex-column gap-3">
+                        <div class="d-flex justify-content-between py-2 border-bottom border-secondary border-opacity-10">
+                            <span class="text-muted">Age</span>
+                            <span class="fw-semibold text-white">@Model.Age Years</span>
+                        </div>
+                        <div class="d-flex justify-content-between py-2 border-bottom border-secondary border-opacity-10">
+                            <span class="text-muted">Clinical Status</span>
+                            <span class="badge-status badge-@Model.Status.ToLower()">@Model.Status</span>
+                        </div>
+                        <div class="d-flex justify-content-between py-2 border-bottom border-secondary border-opacity-10">
+                            <span class="text-muted">Date Admitted</span>
+                            <span class="text-white"><i class="bi bi-calendar-event me-1 text-muted"></i>@Model.DateAdmitted.ToString("d")</span>
+                        </div>
+                        <div class="d-flex justify-content-between py-2">
+                            <span class="text-muted">Associated Patient ID</span>
+                            <code class="small text-white">@Model.PatientId</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Decrypted Core Medical Data -->
+        <div class="col-lg-8">
+            <div class="d-flex flex-column gap-4">
+                <!-- Medical History -->
+                <div class="card-custom">
+                    <div class="card-header bg-transparent d-flex justify-content-between align-items-center py-3">
+                        <h5 class="mb-0 d-flex align-items-center gap-2 text-white">
+                            <i class="bi bi-journal-medical text-gradient"></i> Clinical Progress Notes / Care History
+                        </h5>
+                        <span class="decrypted-badge badge border small d-flex align-items-center gap-1">
+                            <i class="bi bi-unlock-fill"></i> Decrypted
+                        </span>
+                    </div>
+                    <div class="card-body p-4">
+                        <p class="mb-0 text-white font-monospace small" style="white-space: pre-line; line-height: 1.6;">
+                            @(string.IsNullOrWhiteSpace(Model.MedicalHistory) ? "No clinical notes registered." : Model.MedicalHistory)
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Diagnoses & Prescriptions -->
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="card-custom h-100">
+                            <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0 d-flex align-items-center gap-2 text-white">
+                                    <i class="bi bi-heart-pulse-fill text-gradient" style="color: var(--color-nurse);"></i> Diagnoses
+                                </h6>
+                                <span class="decrypted-badge badge border small" style="font-size: 0.65rem;">
+                                    <i class="bi bi-unlock-fill"></i> Decrypted
+                                </span>
+                            </div>
+                            <div class="card-body p-4">
+                                <p class="mb-0 text-muted small" style="white-space: pre-line; line-height: 1.5;">
+                                    @(string.IsNullOrWhiteSpace(Model.Diagnoses) ? "No diagnosis registered." : Model.Diagnoses)
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card-custom h-100">
+                            <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0 d-flex align-items-center gap-2 text-white">
+                                    <i class="bi bi-prescription text-gradient" style="color: var(--color-records);"></i> Prescriptions
+                                </h6>
+                                <span class="decrypted-badge badge border small" style="font-size: 0.65rem;">
+                                    <i class="bi bi-unlock-fill"></i> Decrypted
+                                </span>
+                            </div>
+                            <div class="card-body p-4">
+                                <p class="mb-0 text-muted small" style="white-space: pre-line; line-height: 1.5;">
+                                    @(string.IsNullOrWhiteSpace(Model.Prescriptions) ? "No prescriptions active." : Model.Prescriptions)
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Warning Alert -->
+    <div class="alert alert-info border border-info border-opacity-15 bg-transparent d-flex align-items-start gap-3 mt-4 mb-0" role="alert">
+        <div class="p-2 rounded bg-info bg-opacity-10 text-info">
+            <i class="bi bi-shield-fill-lock fs-5"></i>
+        </div>
+        <div>
+            <h6 class="alert-heading fw-bold mb-1 text-info">Cryptographic Decryption Active</h6>
+            <p class="mb-0 small text-muted">
+                These clinical fields are stored encrypted (AES-256) inside the SQL Server database. Your authorized credentials have verified decryption clearance, and this access transaction has been recorded in the system audit logs.
+            </p>
+        </div>
+    </div>
+</div>

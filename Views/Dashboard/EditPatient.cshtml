@@ -1,0 +1,137 @@
+@model MediVault.ViewModels.PatientRecordFormViewModel
+@{
+    var isCreate = Model.Id == 0;
+    ViewData["Title"] = isCreate ? "New Patient Record" : "Edit Patient Record";
+    var returnAction = Model.ReturnAction ?? "Index";
+}
+
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row align-items-center mb-4 g-3">
+        <div class="col-sm-8">
+            <h1 class="h2 mb-1 d-flex align-items-center gap-2">
+                <i class="bi bi-@(isCreate ? "person-plus-fill" : "pencil-square") text-gradient"></i> 
+                <span>@(isCreate ? "Admit New Patient" : "Edit Patient Record")</span>
+            </h1>
+            <p class="text-muted mb-0">Fill out patient credentials. Sensitive medical fields are encrypted dynamically on save.</p>
+        </div>
+        <div class="col-sm-4 text-sm-end">
+            <a class="btn-premium-secondary py-2 px-3 text-decoration-none" asp-action="@returnAction">
+                <i class="bi bi-arrow-left"></i> Cancel & Return
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger border border-danger border-opacity-10 bg-transparent text-danger mb-4">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["Error"]
+        </div>
+    }
+
+    <!-- Form Container -->
+    <div class="card-custom">
+        <div class="card-header bg-transparent d-flex align-items-center gap-2">
+            <i class="bi bi-shield-fill-check text-gradient"></i>
+            <h5 class="mb-0">Secure Patient Admission Dossier</h5>
+        </div>
+        <div class="card-body p-4 p-sm-5">
+            <form asp-action="EditPatient" method="post">
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="ReturnAction" />
+
+                <div class="row g-4">
+                    <!-- Patient Chart ID -->
+                    <div class="col-md-6">
+                        <label asp-for="PatientId" class="form-label text-muted small"><i class="bi bi-card-text me-1"></i>Patient Chart ID / Number</label>
+                        <input asp-for="PatientId" class="form-control form-input-custom" placeholder="e.g. CHART-001" />
+                        <span asp-validation-for="PatientId" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Date Admitted -->
+                    <div class="col-md-6">
+                        <label asp-for="DateAdmitted" class="form-label text-muted small"><i class="bi bi-calendar-check me-1"></i>Date of Admission</label>
+                        <input asp-for="DateAdmitted" class="form-control form-input-custom" type="date" />
+                        <span asp-validation-for="DateAdmitted" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Names -->
+                    <div class="col-md-4">
+                        <label asp-for="FirstName" class="form-label text-muted small">First Name</label>
+                        <input asp-for="FirstName" class="form-control form-input-custom" placeholder="First name" />
+                        <span asp-validation-for="FirstName" class="text-danger small"></span>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <label asp-for="LastName" class="form-label text-muted small">Last Name</label>
+                        <input asp-for="LastName" class="form-control form-input-custom" placeholder="Last name" />
+                        <span asp-validation-for="LastName" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Age -->
+                    <div class="col-md-4">
+                        <label asp-for="Age" class="form-label text-muted small">Age (Years)</label>
+                        <input asp-for="Age" class="form-control form-input-custom" type="number" min="0" placeholder="e.g. 25" />
+                        <span asp-validation-for="Age" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Diagnosis -->
+                    <div class="col-md-6">
+                        <label asp-for="Diagnosis" class="form-label text-muted small"><i class="bi bi-heart-pulse me-1"></i>Primary Diagnosis / Reason for Admission</label>
+                        <input asp-for="Diagnosis" class="form-control form-input-custom" placeholder="e.g., Acute Appendicitis" />
+                        <span asp-validation-for="Diagnosis" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="col-md-6">
+                        <label asp-for="Status" class="form-label text-muted small"><i class="bi bi-activity me-1"></i>Patient Ward Status</label>
+                        <select asp-for="Status" class="form-select form-input-custom">
+                            <option>Stable</option>
+                            <option>Improving</option>
+                            <option>Serious</option>
+                            <option>Critical</option>
+                            <option>Discharged</option>
+                        </select>
+                        <span asp-validation-for="Status" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Decrypted/Encrypted Clinical Fields Area -->
+                    <div class="col-12 mt-4 pt-3 border-top border-secondary border-opacity-10">
+                        <span class="encryption-target-badge badge border mb-3 p-2 small">
+                            <i class="bi bi-shield-fill-lock"></i> Application-Level AES-256 Encryption Target Fields
+                        </span>
+                    </div>
+
+                    <!-- Clinical Progress Notes -->
+                    <div class="col-12">
+                        <label asp-for="MedicalHistory" class="form-label text-muted small"><i class="bi bi-journal-medical me-1"></i>Clinical Progress History & Care Notes</label>
+                        <textarea asp-for="MedicalHistory" class="form-control form-input-custom" rows="5" placeholder="Detailed clinical observations, care timelines, or nurse logs..."></textarea>
+                    </div>
+
+                    <!-- Detailed Diagnoses -->
+                    <div class="col-md-6">
+                        <label asp-for="Diagnoses" class="form-label text-muted small"><i class="bi bi-heart-pulse-fill me-1"></i>Detailed Clinical Diagnoses</label>
+                        <textarea asp-for="Diagnoses" class="form-control form-input-custom" rows="4" placeholder="Secondary diagnoses, clinical codes, laboratory report summaries..."></textarea>
+                    </div>
+
+                    <!-- Prescriptions -->
+                    <div class="col-md-6">
+                        <label asp-for="Prescriptions" class="form-label text-muted small"><i class="bi bi-prescription me-1"></i>Active Medical Prescriptions</label>
+                        <textarea asp-for="Prescriptions" class="form-control form-input-custom" rows="4" placeholder="Medication schedules, dosages, administration rules..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Submit -->
+                <div class="mt-5 text-end border-top border-secondary border-opacity-10 pt-4">
+                    <button type="submit" class="btn-premium-primary px-4 py-3">
+                        <i class="bi bi-shield-fill-check"></i> Encrypt & Save Record File
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

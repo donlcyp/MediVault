@@ -1,0 +1,138 @@
+@{
+    ViewData["Title"] = "My Health Vault";
+    var patientRecords = (List<MediVault.Models.PatientRecord>)ViewBag.PatientRecords ?? new List<MediVault.Models.PatientRecord>();
+}
+
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row align-items-center mb-4 g-3">
+        <div class="col-sm-8">
+            <h1 class="h2 mb-1 d-flex align-items-center gap-2">
+                <i class="bi bi-shield-fill-check text-gradient" style="color: var(--color-patient);"></i> 
+                <span>My Patient Health Vault</span>
+            </h1>
+            <p class="text-muted mb-0">Secure personal access to your medical history, active diagnoses, and physician prescriptions.</p>
+        </div>
+        <div class="col-sm-4 text-sm-end">
+            <span class="badge-role badge-patient px-3 py-2 fs-7"><i class="bi bi-person-fill-lock"></i> Patient Personal Access</span>
+        </div>
+    </div>
+
+    <!-- Health Summary Info -->
+    <div class="row g-3 mb-4">
+        <!-- Quick Stats -->
+        <div class="col-md-6">
+            <div class="card-custom h-100 p-4">
+                <h5 class="mb-3 text-gradient"><i class="bi bi-bar-chart-fill"></i> Health Summary stats</h5>
+                <div class="row text-center mt-2">
+                    <div class="col-6 border-end border-secondary border-opacity-10">
+                        <span class="text-muted small d-block mb-1">Total Admissions</span>
+                        <h2 class="mb-0 fw-bold text-white">@patientRecords.Count</h2>
+                    </div>
+                    <div class="col-6">
+                        <span class="text-muted small d-block mb-1">Latest Consultation</span>
+                        <h4 class="mb-0 fw-semibold text-white mt-1">
+                            @(patientRecords.Any() ? patientRecords.OrderByDescending(x => x.DateAdmitted).First().DateAdmitted.ToString("d") : "No Visits Logged")
+                        </h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Information Notice -->
+        <div class="col-md-6">
+            <div class="card-custom h-100 p-4">
+                <h5 class="mb-3 text-gradient"><i class="bi bi-info-circle-fill"></i> Security Information</h5>
+                <ul class="list-unstyled mb-0 d-flex flex-column gap-2">
+                    <li class="d-flex align-items-start gap-2 text-muted small">
+                        <i class="bi bi-lock-fill text-success mt-1"></i>
+                        <div>
+                            <strong class="text-white">End-to-End Privacy:</strong> Your records are encrypted with AES-256 standards in our database.
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-start gap-2 text-muted small">
+                        <i class="bi bi-shield-check text-info mt-1"></i>
+                        <div>
+                            <strong class="text-white">Provider Verification:</strong> Access is permitted only to authorized doctors & clinical staff.
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Patient Records list -->
+    <div class="card-custom">
+        <div class="card-header bg-transparent py-3">
+            <h5 class="mb-0 d-flex align-items-center gap-2">
+                <i class="bi bi-file-medical text-gradient"></i> My Medical History & Records
+            </h5>
+        </div>
+        <div class="card-body p-4">
+            @if (patientRecords.Any())
+            {
+                <div class="d-flex flex-column gap-3">
+                    @foreach (var record in patientRecords.OrderByDescending(x => x.DateAdmitted))
+                    {
+                        <div class="p-3 rounded-3 border border-secondary border-opacity-10" style="background: rgba(255, 255, 255, 0.01);">
+                            <div class="row align-items-center g-3">
+                                <div class="col-md-8">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <h5 class="mb-0 fw-semibold">@record.Diagnosis</h5>
+                                        <span class="badge-status badge-@record.Status.ToLower()">@record.Status</span>
+                                    </div>
+                                    <div class="d-flex gap-3 text-muted small">
+                                        <span><i class="bi bi-calendar-event me-1"></i>Admitted: @record.DateAdmitted.ToString("d")</span>
+                                        <span><i class="bi bi-hash me-1"></i>ID: <code>#@record.Id.ToString("D4")</code></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-md-end">
+                                    <a href="@Url.Action("ViewPatient", "Dashboard", new { id = record.Id })" class="btn-premium-primary text-decoration-none py-2">
+                                        <i class="bi bi-eye"></i> View Full Chart
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info border border-info border-opacity-10 bg-transparent text-info d-flex align-items-center gap-2 mb-0">
+                    <i class="bi bi-info-circle-fill"></i>
+                    <span>No medical records exist in your health vault profile.</span>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- HIPAA & Privacy Alert Panel -->
+    <div class="card border-0 glass-panel p-4 mt-4" style="border-color: rgba(245, 158, 11, 0.15); background: rgba(245, 158, 11, 0.03);">
+        <h5 class="d-flex align-items-center gap-2 text-warning">
+            <i class="bi bi-shield-exclamation fs-4"></i> HIPAA Privacy & Security Notice
+        </h5>
+        <p class="text-muted small mb-0 mt-2" style="line-height: 1.5;">
+            MediVault complies with federal and local health insurance information privacy regulations. All interactions, view requests, and changes to these medical records are subject to immutable cryptographic audit logs to protect against unauthorized access.
+        </p>
+    </div>
+</div>
+
+@functions {
+    private string GetStatusBadgeColor(string status)
+    {
+        return status switch
+        {
+            "Critical" => "danger",
+            "Serious" => "warning",
+            "Stable" => "info",
+            "Improving" => "success",
+            _ => "secondary"
+        };
+    }
+}
+
+@section Scripts {
+    <script>
+        // Patient dashboard specific scripts
+    </script>
+}

@@ -1,0 +1,137 @@
+@{
+    ViewData["Title"] = "Doctor Dashboard";
+    var patientRecords = (List<MediVault.Models.PatientRecord>)ViewBag.PatientRecords ?? new List<MediVault.Models.PatientRecord>();
+}
+
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row align-items-center mb-4 g-3">
+        <div class="col-sm-8">
+            <h1 class="h2 mb-1 d-flex align-items-center gap-2">
+                <i class="bi bi-stethoscope text-gradient" style="color: var(--color-doctor);"></i> 
+                <span>Doctor Dashboard</span>
+            </h1>
+            <p class="text-muted mb-0">Clinical access to active patient records, diagnoses, and medical prescriptions.</p>
+        </div>
+        <div class="col-sm-4 text-sm-end">
+            <span class="badge-role badge-doctor px-3 py-2 fs-7"><i class="bi bi-shield-shaded"></i> Clinical Authority Access</span>
+        </div>
+    </div>
+
+    <!-- Metrics -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3 col-sm-6">
+            <div class="metric-box">
+                <div class="metric-icon" style="background: rgba(2, 132, 199, 0.1); color: var(--color-doctor);">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <div class="ms-3">
+                    <span class="d-block text-muted small">Active Patients</span>
+                    <h3 class="mb-0 fw-bold">@patientRecords.Count</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="metric-box" style="border-color: rgba(239, 68, 68, 0.25);">
+                <div class="metric-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--status-critical);">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <div class="ms-3">
+                    <span class="d-block text-muted small">Critical Cases</span>
+                    <h3 class="mb-0 text-danger fw-bold">@patientRecords.Count(x => x.Status == "Critical")</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="metric-box">
+                <div class="metric-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--color-nurse);">
+                    <i class="bi bi-file-earmark-check-fill"></i>
+                </div>
+                <div class="ms-3">
+                    <span class="d-block text-muted small">Prescriptions Logged</span>
+                    <h3 class="mb-0 fw-bold">@patientRecords.Count</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="metric-box">
+                <div class="metric-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--color-records);">
+                    <i class="bi bi-calendar2-check-fill"></i>
+                </div>
+                <div class="ms-3">
+                    <span class="d-block text-muted small">Daily Rounds</span>
+                    <h3 class="mb-0 fw-bold">@patientRecords.Count(x => x.Status == "Serious" || x.Status == "Critical")</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Patients List -->
+    <div class="card-custom">
+        <div class="card-header bg-transparent d-flex justify-content-between align-items-center flex-wrap gap-2 py-3">
+            <h5 class="mb-0 d-flex align-items-center gap-2">
+                <i class="bi bi-person-lines-fill text-gradient"></i> Assigned Patient Records
+            </h5>
+            <a href="@Url.Action("CreatePatient", "Dashboard")" class="btn-premium-primary d-flex align-items-center gap-2 py-2">
+                <i class="bi bi-plus-lg"></i> Admit New Patient
+            </a>
+        </div>
+        <div class="card-body p-4">
+            @if (patientRecords.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-custom">
+                        <thead>
+                            <tr>
+                                <th>Patient ID</th>
+                                <th>Name</th>
+                                <th>Age</th>
+                                <th>Diagnosis</th>
+                                <th>Status</th>
+                                <th>Date Admitted</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var record in patientRecords)
+                            {
+                                <tr>
+                                    <td><code class="text-gradient fw-bold">#@record.Id.ToString("D4")</code></td>
+                                    <td class="fw-semibold">@record.PatientName</td>
+                                    <td>@record.Age yrs</td>
+                                    <td><span class="text-muted">@record.Diagnosis</span></td>
+                                    <td>
+                                        <span class="badge-status badge-@record.Status.ToLower()">@record.Status</span>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted"><i class="bi bi-calendar3 me-1"></i>@record.DateAdmitted.ToString("d")</small>
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="d-inline-flex gap-2">
+                                            <a href="@Url.Action("ViewPatient", "Dashboard", new { id = record.Id })" class="btn-premium-secondary py-1 px-3 fs-8">
+                                                <i class="bi bi-eye"></i> View
+                                            </a>
+                                            <a href="@Url.Action("EditPatient", "Dashboard", new { id = record.Id })" class="btn btn-sm btn-outline-info d-inline-flex align-items-center gap-1 py-1 px-3 border-opacity-25" style="border-radius: 10px;">
+                                                <i class="bi bi-pencil-square"></i> Edit
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info border border-info border-opacity-10 bg-transparent text-info d-flex align-items-center gap-2 mb-0">
+                    <i class="bi bi-info-circle-fill"></i>
+                    <span>No active patient records assigned under clinical access.</span>
+                </div>
+            }
+        </div>
+    </div>
+</div>

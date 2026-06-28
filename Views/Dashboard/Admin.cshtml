@@ -1,0 +1,189 @@
+@{
+    ViewData["Title"] = "System Administrator Dashboard";
+    var totalUsers = (int?)ViewBag.TotalUsers ?? 0;
+    var totalRecords = (int?)ViewBag.TotalRecords ?? 0;
+    var totalAuditLogs = (int?)ViewBag.TotalAuditLogs ?? 0;
+    var recentAuditLogs = (List<MediVault.Models.AuditLog>)ViewBag.RecentAuditLogs ?? new List<MediVault.Models.AuditLog>();
+}
+
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row align-items-center mb-4 g-3">
+        <div class="col-sm-8">
+            <h1 class="h2 mb-1 d-flex align-items-center gap-2">
+                <i class="bi bi-shield-lock-fill text-gradient" style="color: var(--color-admin);"></i> 
+                <span>System Administrator Dashboard</span>
+            </h1>
+            <p class="text-muted mb-0">Manage authentication, cryptographic settings, and monitor immutable system logs.</p>
+        </div>
+    </div>
+
+    <!-- Zero clinical access warning banner -->
+    <div class="alert alert-warning border border-warning border-opacity-10 bg-transparent text-warning d-flex align-items-center gap-3 mb-4">
+        <i class="bi bi-shield-fill-exclamation fs-4"></i>
+        <div>
+            <h6 class="mb-0 fw-bold">Restricted Access Policy</h6>
+            <small class="opacity-75">By design, System Administrators have zero access to decrypted medical health records or patient clinical files. This system enforces a strict zero-trust operational boundary.</small>
+        </div>
+    </div>
+
+    <!-- Key Metrics Grid -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3 col-sm-6">
+            <div class="metric-box">
+                <div class="metric-icon" style="background: rgba(217, 70, 239, 0.1); color: var(--color-admin);">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <div class="ms-3">
+                    <span class="d-block text-muted small">Total Users</span>
+                    <h3 class="mb-0 fw-bold">@totalUsers</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="metric-box">
+                <div class="metric-icon" style="background: rgba(2, 132, 199, 0.1); color: var(--color-doctor);">
+                    <i class="bi bi-file-medical-fill"></i>
+                </div>
+                <div class="ms-3">
+                    <span class="d-block text-muted small">Patient Records</span>
+                    <h3 class="mb-0 fw-bold">@totalRecords</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="metric-box">
+                <div class="metric-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--color-records);">
+                    <i class="bi bi-file-text-fill"></i>
+                </div>
+                <div class="ms-3">
+                    <span class="d-block text-muted small">Audit Events</span>
+                    <h3 class="mb-0 fw-bold">@totalAuditLogs</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="metric-box">
+                <div class="metric-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--color-nurse);">
+                    <i class="bi bi-cpu-fill"></i>
+                </div>
+                <div class="ms-3">
+                    <span class="d-block text-muted small">System Security</span>
+                    <h3 class="mb-0 text-success fw-bold d-flex align-items-center gap-1">
+                        <span class="spinner-grow spinner-grow-sm text-success" role="status" style="width: 8px; height: 8px;"></span>
+                        Active
+                    </h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Workspace -->
+    <div class="row g-4">
+        <!-- Controls -->
+        <div class="col-lg-6">
+            <div class="card-custom h-100">
+                <div class="card-header bg-transparent d-flex align-items-center gap-2">
+                    <i class="bi bi-sliders text-gradient"></i>
+                    <h5 class="mb-0">Administrative Control Center</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex flex-column gap-3">
+                        <a href="@Url.Action("UserManagement", "Dashboard")" class="d-flex align-items-center justify-content-between p-3 rounded-3 text-decoration-none border border-secondary border-opacity-10 text-white" style="background: rgba(255, 255, 255, 0.01); transition: all 0.2s ease;" onmouseover="this.style.background='rgba(255, 255, 255, 0.04)'; this.style.borderColor='var(--accent-cyan)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.01)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="admin-action-icon p-2 rounded border border-secondary border-opacity-25" style="color: var(--accent-cyan);">
+                                    <i class="bi bi-person-gear fs-5"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">User Permissions</h6>
+                                    <small class="text-muted">Manage roles and profile verification.</small>
+                                </div>
+                            </div>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+
+                        <a href="@Url.Action("RoleManagement", "Dashboard")" class="d-flex align-items-center justify-content-between p-3 rounded-3 text-decoration-none border border-secondary border-opacity-10 text-white" style="background: rgba(255, 255, 255, 0.01); transition: all 0.2s ease;" onmouseover="this.style.background='rgba(255, 255, 255, 0.04)'; this.style.borderColor='var(--accent-cyan)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.01)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="admin-action-icon p-2 rounded border border-secondary border-opacity-25" style="color: var(--color-admin);">
+                                    <i class="bi bi-shield-lock-fill fs-5"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Role Management</h6>
+                                    <small class="text-muted">Define boundary rules and restrictions.</small>
+                                </div>
+                            </div>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+
+                        <a href="@Url.Action("EncryptionKeyManagement", "Dashboard")" class="d-flex align-items-center justify-content-between p-3 rounded-3 text-decoration-none border border-secondary border-opacity-10 text-white" style="background: rgba(255, 255, 255, 0.01); transition: all 0.2s ease;" onmouseover="this.style.background='rgba(255, 255, 255, 0.04)'; this.style.borderColor='var(--accent-cyan)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.01)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="admin-action-icon p-2 rounded border border-secondary border-opacity-25" style="color: var(--accent-blue);">
+                                    <i class="bi bi-key-fill fs-5"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Cryptographic Key Center</h6>
+                                    <small class="text-muted">View database encryption status & keys.</small>
+                                </div>
+                            </div>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+
+                        <a href="@Url.Action("AuditLogs", "Dashboard")" class="d-flex align-items-center justify-content-between p-3 rounded-3 text-decoration-none border border-secondary border-opacity-10 text-white" style="background: rgba(255, 255, 255, 0.01); transition: all 0.2s ease;" onmouseover="this.style.background='rgba(255, 255, 255, 0.04)'; this.style.borderColor='var(--accent-cyan)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.01)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="admin-action-icon p-2 rounded border border-secondary border-opacity-25" style="color: var(--color-records);">
+                                    <i class="bi bi-list-columns-reverse fs-5"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Full Audit Log History</h6>
+                                    <small class="text-muted">Browse complete access logs and history.</small>
+                                </div>
+                            </div>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Timeline -->
+        <div class="col-lg-6">
+            <div class="card-custom h-100">
+                <div class="card-header bg-transparent d-flex align-items-center gap-2">
+                    <i class="bi bi-clock-history text-gradient"></i>
+                    <h5 class="mb-0">Recent Security Activity</h5>
+                </div>
+                <div class="card-body p-4">
+                    @if (recentAuditLogs.Any())
+                    {
+                        <div class="d-flex flex-column">
+                            @foreach (var log in recentAuditLogs.Take(5))
+                            {
+                                <div class="audit-timeline-item">
+                                    <div class="d-flex justify-content-between align-items-start mb-1">
+                                        <h6 class="mb-0 fw-semibold">@log.Action</h6>
+                                        <small class="text-muted" style="font-size: 0.75rem;"><i class="bi bi-clock"></i> @log.Timestamp.ToString("g")</small>
+                                    </div>
+                                    <p class="text-muted mb-0 small" style="line-height: 1.4;">@log.Description</p>
+                                    @if (!string.IsNullOrWhiteSpace(log.Details))
+                                    {
+                                        <span class="audit-detail-badge d-inline-block mt-2 badge border border-secondary border-opacity-10" style="font-size: 0.75rem;">@log.Details</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info border border-info border-opacity-10 bg-transparent text-info d-flex align-items-center gap-2 mb-0">
+                            <i class="bi bi-info-circle-fill"></i>
+                            <span>No security events recorded in the last 24 hours.</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

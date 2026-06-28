@@ -1,0 +1,96 @@
+@using Microsoft.AspNetCore.Identity
+@using MediVault.Data
+@using MediVault.Constants
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<ul class="navbar-nav ms-auto align-items-center gap-2">
+@if (SignInManager.IsSignedIn(User))
+{
+    var user = await UserManager.GetUserAsync(User);
+    var roles = user != null ? await UserManager.GetRolesAsync(user) : new List<string>();
+    var primaryRole = roles.FirstOrDefault() ?? "None";
+
+    <!-- Dashboard Link -->
+    <li class="nav-item">
+        <a class="nav-link px-3 btn-premium-secondary border-0" asp-controller="Dashboard" asp-action="Index" title="Dashboard">
+            <i class="bi bi-speedometer2 text-gradient"></i> Dashboard
+        </a>
+    </li>
+
+    @if (roles.Contains(Roles.SystemAdministrator))
+    {
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="Dashboard" asp-action="UserManagement">
+                <i class="bi bi-people"></i> Users
+            </a>
+        </li>
+   
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="Dashboard" asp-action="AuditLogs">
+                <i class="bi bi-file-text"></i> Audit Logs
+            </a>
+        </li>
+    }
+
+    <!-- User Account Dropdown -->
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2 px-3 py-2 rounded-3" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-light);">
+            <i class="bi bi-person-circle text-gradient" style="font-size: 1.15rem;"></i> 
+            <span class="d-none d-sm-inline">@User.Identity?.Name</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom mt-2" aria-labelledby="userDropdown">
+            <li>
+                <div class="dropdown-header d-flex flex-column gap-1">
+                    <span class="text-muted small">Access Authorization</span>
+                    <div>
+                        @if (primaryRole == Roles.SystemAdministrator)
+                        {
+                            <span class="badge-role badge-admin">Administrator</span>
+                        }
+                        else if (primaryRole == Roles.Doctor)
+                        {
+                            <span class="badge-role badge-doctor">Doctor</span>
+                        }
+                        else if (primaryRole == Roles.Nurse)
+                        {
+                            <span class="badge-role badge-nurse">Nurse</span>
+                        }
+                        else if (primaryRole == Roles.RecordOfficer)
+                        {
+                            <span class="badge-role badge-records">Record Officer</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary text-muted">None</span>
+                        }
+                    </div>
+                </div>
+            </li>
+            <li><hr class="dropdown-divider border-secondary opacity-25"></li>
+            <li>
+                <a class="dropdown-item d-flex align-items-center gap-2" asp-area="Identity" asp-page="/Account/Manage/Index">
+                    <i class="bi bi-person-gear"></i> Account Settings
+                </a>
+            </li>
+            <li><hr class="dropdown-divider border-secondary opacity-25"></li>
+            <li>
+                <form class="logout-form" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post" asp-antiforgery="true">
+                    <button type="submit" class="dropdown-item d-flex align-items-center gap-2 text-danger w-100">
+                        <i class="bi bi-box-arrow-right"></i> Sign Out
+                    </button>
+                </form>
+            </li>
+        </ul>
+    </li>
+}
+else
+{
+
+    <li class="nav-item">
+        <a class="nav-link btn-premium-primary text-dark ms-2" asp-area="Identity" asp-page="/Account/Login">
+            <i class="bi bi-box-arrow-in-right"></i> Login
+        </a>
+    </li>
+}
+</ul>

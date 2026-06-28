@@ -1,0 +1,62 @@
+@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Access Portal";
+}
+
+<div class="auth-card mx-auto mt-5" style="max-width: 450px;">
+    <div class="glass-panel p-4 p-sm-5 position-relative overflow-hidden" style="box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4); border-color: rgba(255, 255, 255, 0.05);">
+        <!-- Glowing top indicator bar -->
+        <div class="position-absolute top-0 start-0 end-0" style="height: 3px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue));"></div>
+        
+        <div class="text-center mb-4">
+            <div class="d-inline-flex p-3 rounded-circle mb-3" style="background: rgba(0, 242, 254, 0.08); color: var(--accent-cyan); filter: drop-shadow(0 0 8px rgba(0, 242, 254, 0.3));">
+                <i class="bi bi-shield-lock-fill" style="font-size: 2.2rem;"></i>
+            </div>
+            <h2 class="h3 fw-bold mb-1">Secure Sign In</h2>
+            <p class="text-muted small mb-0">MediVault Cryptographic Authentication Gateway</p>
+        </div>
+
+        <form id="account" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger p-2 small mb-3" role="alert"></div>
+            
+            <!-- Email Input -->
+            <div class="auth-field mb-3">
+                <label asp-for="Input.Email" class="form-label">Email Address</label>
+                <input asp-for="Input.Email" class="form-control form-input-custom" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                <span asp-validation-for="Input.Email" class="text-danger small"></span>
+            </div>
+            
+            <!-- Password Input -->
+            <div class="auth-field mb-3">
+                <label asp-for="Input.Password" class="form-label">Password</label>
+                <input asp-for="Input.Password" class="form-control form-input-custom" autocomplete="current-password" aria-required="true" placeholder="password" />
+                <span asp-validation-for="Input.Password" class="text-danger small"></span>
+            </div>
+            
+            <!-- Remember Me -->
+            <div class="form-check mb-4 text-start">
+                <input class="form-check-input bg-transparent border-secondary" asp-for="Input.RememberMe" style="border-radius: 4px;" />
+                <label asp-for="Input.RememberMe" class="form-check-label text-muted small">
+                    Keep me signed in for 30 days
+                </label>
+            </div>
+            
+            <!-- Submit Button -->
+            <button id="login-submit" type="submit" class="w-100 btn btn-premium-primary py-3 mb-4">
+                <i class="bi bi-unlock-fill"></i> Decrypt & Access
+            </button>
+            
+            <div class="text-center small border-top border-secondary border-opacity-10 pt-3">
+                <p class="mb-0">
+                    <a id="forgot-password" asp-page="./ForgotPassword" class="text-decoration-none text-muted">Forgot password?</a>
+                </p>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

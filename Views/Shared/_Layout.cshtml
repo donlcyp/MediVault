@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MediVault</title>
+    
+    <!-- Google Fonts & Icon Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
+    
+    <!-- Bootstrap & Site Overrides -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/MediVault.styles.css" asp-append-version="true" />
+    <!-- Prevent Theme Flicker -->
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark navbar-custom shadow-sm">
+            <div class="container-fluid">
+                <a class="navbar-brand d-flex align-items-center gap-2" asp-area="" asp-controller="Home" asp-action="Index">
+                    <!-- Custom SVG shield logo from IT21 proposal description -->
+                    <svg width="34" height="34" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 0 4px rgba(0, 242, 254, 0.4));">
+                        <path d="M18 3L6 8v10c0 7.2 5.4 13 12 15 6.6-2 12-7.8 12-15V8l-12-5z" fill="url(#shieldGrad)" stroke="#00F2FE" stroke-width="1.5"/>
+                        <path d="M12 11h12v11H12V11z" fill="#0B0F19" rx="1" />
+                        <path d="M15 15h6M18 12v6" stroke="#4FACFE" stroke-width="1.5" stroke-linecap="round"/>
+                        <rect x="16" y="20" width="4" height="3" rx="0.5" fill="#00F2FE" />
+                        <path d="M17 20v-1.5a1 1 0 012 0V20" stroke="#00F2FE" stroke-width="0.8" fill="none" />
+                        <circle cx="27" cy="27" r="5.5" fill="#10B981" stroke="#0B0F19" stroke-width="1.5" />
+                        <path d="M25 27l1.5 1.5 2.5-2.5" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <defs>
+                            <linearGradient id="shieldGrad" x1="6" y1="3" x2="30" y2="33" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#1E293B"/>
+                                <stop offset="1" stop-color="#0F172A"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <span class="fs-4 fw-bold"><span style="color: #4facfe;">Medi</span><span class="text-gradient">Vault</span></span>
+                </a>
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-lg-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        @if (!(User.Identity?.IsAuthenticated ?? false))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
+                                    <i class="bi bi-house"></i> Home
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">
+                                    <i class="bi bi-shield-lock"></i> Privacy
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                    <!-- Theme Toggle Toggle -->
+                    <div class="d-flex align-items-center me-3 my-2 my-lg-0">
+                        <button id="themeToggleBtn" type="button" class="btn btn-link nav-link p-0 rounded-circle border-0 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: rgba(255,255,255,0.05); color: var(--text-muted); cursor: pointer;" title="Toggle Light/Dark Theme">
+                            <i id="themeToggleIcon" class="bi bi-moon-stars-fill text-gradient" style="font-size: 1.15rem;"></i>
+                        </button>
+                    </div>
+                    <partial name="_LoginPartial" />
+                </div>
+            </div>
+        </nav>
+    </header>
+    
+    <div class="container-fluid">
+        <main role="main" class="pb-5 min-vh-100">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="footer-custom mt-auto">
+        <div class="container text-center text-md-start">
+            <div class="row align-items-center">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-2 mb-2">
+                        <span class="fw-bold"><span style="color: #4facfe;">Medi</span><span class="text-gradient">Vault</span></span>
+                        <span class="badge bg-secondary" style="font-size: 0.7rem;">v1.0.0</span>
+                    </div>
+                    <p class="text-muted small mb-0">
+                        <i class="bi bi-shield-fill-check text-gradient"></i> Secure Hospital Information System. Encrypted & Audited.
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end text-center">
+                    <a asp-area="" asp-controller="Home" asp-action="Privacy" class="text-decoration-none text-muted me-3 hover-cyan">Privacy Policy</a>
+                    <span class="text-muted">|</span>
+                    <span class="text-muted ms-3">&copy; 2026 MediVault Development</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeBtn = document.getElementById('themeToggleBtn');
+            const themeIcon = document.getElementById('themeToggleIcon');
+            
+            if (themeBtn) {
+                const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+                updateThemeIcon(currentTheme);
+
+                themeBtn.addEventListener('click', () => {
+                    const activeTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+                    const newTheme = activeTheme === 'dark' ? 'light' : 'dark';
+                    
+                    document.documentElement.setAttribute('data-theme', newTheme);
+                    localStorage.setItem('theme', newTheme);
+                    updateThemeIcon(newTheme);
+                });
+            }
+
+            function updateThemeIcon(theme) {
+                if (themeIcon) {
+                    if (theme === 'light') {
+                        themeIcon.className = 'bi bi-sun-fill text-gradient';
+                        themeIcon.style.color = '#f59e0b';
+                    } else {
+                        themeIcon.className = 'bi bi-moon-stars-fill text-gradient';
+                        themeIcon.style.color = '';
+                    }
+                }
+            }
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

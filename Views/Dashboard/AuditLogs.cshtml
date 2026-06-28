@@ -1,0 +1,308 @@
+@model AuditLogsViewModel
+@{
+    ViewData["Title"] = "Security Audit Logs";
+    var actionOptions = new (string Value, string Label)[] {
+        ("Login", "Login"),
+        ("LoginFailed", "Login Failed"),
+        ("Lockout", "Lockout"),
+        ("ViewRecord", "View Record"),
+        ("CreateRecord", "Create Record"),
+        ("UpdateRecord", "Update Record"),
+        ("UpdateUserRole", "Update User Role"),
+        ("DeleteRecord", "Delete Record"),
+        ("Download", "Download"),
+        ("IntegrityFailure", "Integrity Failure"),
+        ("ScheduleAppointment", "Schedule Appointment"),
+        ("RescheduleAppointment", "Reschedule Appointment"),
+        ("CancelAppointment", "Cancel Appointment"),
+        ("GenerateBill", "Generate Bill"),
+        ("UpdateBilling", "Update Billing"),
+        ("ExportInvoice", "Export Invoice")
+    };
+    var entityTypeOptions = new (string Value, string Label)[] {
+        ("", "All Entities"),
+        ("User", "User"),
+        ("PatientRecord", "Patient Record"),
+        ("Appointment", "Appointment"),
+        ("BillingRecord", "Billing Record")
+    };
+
+    var filterActionLabel = actionOptions.FirstOrDefault(x => x.Value == Model.FilterAction).Label;
+    if (string.IsNullOrWhiteSpace(filterActionLabel))
+    {
+        filterActionLabel = "All Actions";
+    }
+
+    var filterEntityLabel = entityTypeOptions.FirstOrDefault(x => x.Value == Model.FilterEntityType).Label;
+    if (string.IsNullOrWhiteSpace(filterEntityLabel))
+    {
+        filterEntityLabel = "All Entities";
+    }
+    var visibleCountLabel = Model.HasFilters
+        ? $"Showing {Model.AuditLogs.Count} of {Model.FilteredAuditLogs} filtered logs"
+        : $"Showing {Model.AuditLogs.Count} of {Model.TotalAuditLogs} total logs";
+
+    string PageUrl(int page) => Url.Action("AuditLogs", new
+    {
+        user = Model.FilterUser,
+        action = Model.FilterAction,
+        entityType = Model.FilterEntityType,
+        date = Model.FilterDate,
+        pageNumber = page
+    }) ?? "#";
+}
+
+<div class="container-fluid py-4">
+    <div class="row align-items-center mb-4 g-3">
+        <div class="col-sm-8">
+            <h1 class="h2 mb-1 d-flex align-items-center gap-2">
+                <i class="bi bi-file-earmark-lock-fill text-gradient" style="color: var(--color-admin);"></i>
+                <span>Security Audit Logs</span>
+            </h1>
+            <p class="text-muted mb-0">Browse immutable logs recording every authorization event, medical access, and cryptographic action.</p>
+        </div>
+        <div class="col-sm-4 text-sm-end">
+            <a class="btn-premium-secondary py-2 px-3 text-decoration-none" asp-action="Admin">
+                <i class="bi bi-arrow-left"></i> Admin Panel
+            </a>
+        </div>
+    </div>
+
+    <div class="card-custom audit-filter-card p-4 mb-4">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+            <h5 class="mb-0 d-flex align-items-center gap-2 text-white">
+                <i class="bi bi-funnel-fill text-gradient"></i> Filter Security Events
+            </h5>
+            <a asp-action="AuditLogs" class="btn btn-sm btn-outline-secondary border-opacity-25" style="border-radius: 8px;">
+                Clear Filters
+            </a>
+        </div>
+
+        <form method="get" class="row g-3">
+            <div class="col-md-3 col-sm-6">
+                <label for="filterUser" class="form-label text-muted small">Operator / User ID</label>
+                <input type="text" id="filterUser" name="user" class="form-control form-input-custom" placeholder="Filter by operator..." value="@Model.FilterUser">
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <label for="filterAction" class="form-label text-muted small">Action Category</label>
+                <div class="audit-action-picker" data-audit-action-picker>
+                    <input type="hidden" id="filterAction" name="action" value="@Model.FilterAction" data-audit-action-input />
+                    <button type="button"
+                            class="audit-action-trigger form-input-custom w-100 d-flex align-items-center justify-content-between gap-2"
+                            id="filterActionButton"
+                            data-audit-action-trigger
+                            aria-haspopup="listbox"
+                            aria-expanded="false"
+                            aria-controls="filterActionMenu">
+                        <span data-audit-action-label>@filterActionLabel</span>
+                        <i class="bi bi-chevron-down small"></i>
+                    </button>
+                    <div class="audit-action-menu" id="filterActionMenu" role="listbox" aria-labelledby="filterActionButton" data-audit-action-menu>
+                        <button type="button" class="audit-action-option @(string.IsNullOrWhiteSpace(Model.FilterAction) ? "active" : "")" data-value="">All Actions</button>
+                        @foreach (var action in actionOptions)
+                        {
+                            <button type="button" class="audit-action-option @(Model.FilterAction == action.Value ? "active" : "")" data-value="@action.Value">
+                                @action.Label
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <label for="filterEntityType" class="form-label text-muted small">Entity Type</label>
+                <select id="filterEntityType" name="entityType" class="form-select form-input-custom">
+                    @foreach (var entity in entityTypeOptions)
+                    {
+                        if (Model.FilterEntityType == entity.Value)
+                        {
+                            <option value="@entity.Value" selected="selected">@entity.Label</option>
+                        }
+                        else
+                        {
+                            <option value="@entity.Value">@entity.Label</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <label for="filterDate" class="form-label text-muted small">Log Date</label>
+                <input type="date" id="filterDate" name="date" class="form-control form-input-custom" value="@Model.FilterDate">
+            </div>
+
+            <div class="col-12 col-lg-3 ms-lg-auto d-flex align-items-end">
+                <button type="submit" class="btn-premium-primary w-100 py-2 d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-filter"></i> Apply Filters
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="card-custom">
+        <div class="card-header bg-transparent d-flex justify-content-between align-items-center flex-wrap gap-2 py-3">
+            <h5 class="mb-0 d-flex align-items-center gap-2">
+                <i class="bi bi-database-fill-gear text-gradient"></i> Cryptographic Audit Trail
+            </h5>
+            <div class="d-flex gap-2">
+                <a class="btn btn-sm btn-outline-secondary border-opacity-25" style="border-radius: 8px;"
+                   asp-action="ExportAuditLogsCsv"
+                   asp-route-user="@Model.FilterUser"
+                   asp-route-action="@Model.FilterAction"
+                   asp-route-entityType="@Model.FilterEntityType"
+                   asp-route-date="@Model.FilterDate">
+                    <i class="bi bi-download"></i> CSV
+                </a>
+                <a class="btn btn-sm btn-outline-danger border-opacity-25" style="border-radius: 8px;"
+                   asp-action="ExportAuditLogsPdf"
+                   asp-route-user="@Model.FilterUser"
+                   asp-route-action="@Model.FilterAction"
+                   asp-route-entityType="@Model.FilterEntityType"
+                   asp-route-date="@Model.FilterDate">
+                    <i class="bi bi-filetype-pdf"></i> PDF
+                </a>
+            </div>
+        </div>
+        <div class="card-body p-4">
+            <div class="alert alert-secondary border border-secondary border-opacity-10 bg-transparent text-muted d-flex align-items-center gap-2 mb-3">
+                <i class="bi bi-info-circle"></i>
+                <span>@visibleCountLabel</span>
+            </div>
+            @if (Model.AuditLogs.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-custom">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Operator User ID</th>
+                                <th>Action Category</th>
+                                <th>Target Entity</th>
+                                <th>Detailed Description</th>
+                                <th>Origin IP</th>
+                                <th>Verification</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var log in Model.AuditLogs)
+                            {
+                                <tr>
+                                    <td>
+                                        <small class="text-muted"><i class="bi bi-clock me-1"></i>@log.Timestamp.ToString("g")</small>
+                                    </td>
+                                    <td>
+                                        <code class="small text-white" style="font-family: 'JetBrains Mono', monospace;">@log.UserId</code>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-@GetActionBadgeColor(log.Action) bg-opacity-10 text-@GetActionBadgeColor(log.Action) border border-@GetActionBadgeColor(log.Action) border-opacity-25" style="border-radius: 6px;">
+                                            @log.Action
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <small class="fw-semibold">@log.EntityType</small>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">@log.Details</small>
+                                    </td>
+                                    <td>
+                                        <code class="small text-muted" style="font-family: 'JetBrains Mono', monospace;">@log.IpAddress</code>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25" style="border-radius: 6px;">
+                                            <i class="bi bi-check-circle-fill me-1"></i>Verified
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                @if (Model.TotalPages > 1)
+                {
+                    <nav aria-label="Page navigation" class="mt-4">
+                        <ul class="pagination justify-content-center mb-0 gap-1">
+                            @if (Model.PageNumber > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link btn btn-premium-secondary border-0 px-3" href="@PageUrl(1)">First</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link btn btn-premium-secondary border-0 px-3" href="@PageUrl(Model.PageNumber - 1)">Prev</a>
+                                </li>
+                            }
+
+                            @for (int i = Math.Max(1, Model.PageNumber - 2); i <= Math.Min(Model.TotalPages, Model.PageNumber + 2); i++)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link btn border-0 px-3 @(i == Model.PageNumber ? "btn-premium-primary text-dark" : "btn-premium-secondary")" href="@PageUrl(i)">@i</a>
+                                </li>
+                            }
+
+                            @if (Model.PageNumber < Model.TotalPages)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link btn btn-premium-secondary border-0 px-3" href="@PageUrl(Model.PageNumber + 1)">Next</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link btn btn-premium-secondary border-0 px-3" href="@PageUrl(Model.TotalPages)">Last</a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                }
+            }
+            else
+            {
+                <div class="alert alert-info border border-info border-opacity-10 bg-transparent text-info d-flex align-items-center gap-2 mb-0">
+                    <i class="bi bi-info-circle-fill"></i>
+                    @if (Model.HasFilters)
+                    {
+                        <span>No security audit logs match the applied filters. Try <a asp-action="AuditLogs" class="alert-link">clearing the filters</a>.</span>
+                    }
+                    else if (Model.TotalAuditLogs == 0)
+                    {
+                        <span>The audit log table is empty right now. If this should not be empty, the database seed did not populate as expected.</span>
+                    }
+                    else
+                    {
+                        <span>No security audit logs found.</span>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string GetActionBadgeColor(string action)
+    {
+        return action switch
+        {
+            "Login" => "primary",
+            "LoginFailed" => "danger",
+            "Lockout" => "danger",
+            "ViewRecord" => "info",
+            "CreateRecord" => "success",
+            "UpdateRecord" => "warning",
+            "UpdateUserRole" => "warning",
+            "DeleteRecord" => "danger",
+            "Download" => "secondary",
+            "IntegrityFailure" => "danger",
+            "ScheduleAppointment" => "info",
+            "RescheduleAppointment" => "warning",
+            "CancelAppointment" => "danger",
+            "GenerateBill" => "success",
+            "UpdateBilling" => "success",
+            "ExportInvoice" => "secondary",
+            _ => "secondary"
+        };
+    }
+}
+
+@section Scripts {
+    <script>
+        // Audit logs specific scripts
+    </script>
+}

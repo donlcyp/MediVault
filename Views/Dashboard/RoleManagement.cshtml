@@ -1,0 +1,63 @@
+@{
+    ViewData["Title"] = "Security Role Configurations";
+    dynamic roles = ViewBag.Roles;
+}
+
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row align-items-center mb-4 g-3">
+        <div class="col-sm-8">
+            <h1 class="h2 mb-1 d-flex align-items-center gap-2">
+                <i class="bi bi-shield-check text-gradient" style="color: var(--color-admin);"></i> 
+                <span>Role Management Policies</span>
+            </h1>
+            <p class="text-muted mb-0">System roles define access permissions, restrictions, and functional boundary scopes.</p>
+        </div>
+        <div class="col-sm-4 text-sm-end">
+            <div class="d-inline-flex gap-2">
+                <a class="btn-premium-secondary py-2 px-3 text-decoration-none" asp-action="Admin">
+                    <i class="bi bi-arrow-left"></i> Admin Panel
+                </a>
+                <a class="btn-premium-primary py-2 px-3 text-decoration-none" asp-action="UserManagement">
+                    <i class="bi bi-people"></i> Manage User Roles
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Roles Grid -->
+    <div class="row g-4">
+        @foreach (var role in roles)
+        {
+            var roleName = (string)role.Name;
+            var colorVar = roleName switch
+            {
+                "SystemAdministrator" => "var(--color-admin)",
+                "Doctor" => "var(--color-doctor)",
+                "Nurse" => "var(--color-nurse)",
+                "RecordOfficer" => "var(--color-records)",
+                _ => "var(--color-patient)"
+            };
+            var badgeClass = roleName switch
+            {
+                "SystemAdministrator" => "badge-admin",
+                "Doctor" => "badge-doctor",
+                "Nurse" => "badge-nurse",
+                "RecordOfficer" => "badge-records",
+                _ => "badge-patient"
+            };
+
+            <div class="col-md-6 col-lg-4">
+                <div class="card-custom h-100" style="border-left: 4px solid @colorVar;">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h5 class="mb-0 fw-bold text-white">@roleName</h5>
+                            <span class="badge-role @badgeClass font-monospace" style="font-size: 0.65rem;">Active</span>
+                        </div>
+                        <p class="text-muted small mb-0" style="line-height: 1.5;">@role.Description</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

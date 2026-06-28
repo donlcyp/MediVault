@@ -1,0 +1,94 @@
+@{
+    ViewData["Title"] = "Cryptographic Key Center";
+}
+
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row align-items-center mb-4 g-3">
+        <div class="col-sm-8">
+            <h1 class="h2 mb-1 d-flex align-items-center gap-2">
+                <i class="bi bi-key-fill text-gradient" style="color: var(--color-admin);"></i> 
+                <span>Encryption Key Management</span>
+            </h1>
+            <p class="text-muted mb-0">Monitor application-level cryptographic operations, database encryption states, and keys.</p>
+        </div>
+        <div class="col-sm-4 text-sm-end">
+            <a class="btn-premium-secondary py-2 px-3 text-decoration-none" asp-action="Admin">
+                <i class="bi bi-arrow-left"></i> Admin Panel
+            </a>
+        </div>
+    </div>
+
+    <!-- Security Warning Alert -->
+    <div class="alert alert-info border border-info border-opacity-15 bg-transparent d-flex align-items-start gap-3 p-4 mb-4" role="alert">
+        <div class="p-2 rounded bg-info bg-opacity-10 text-info">
+            <i class="bi bi-shield-fill-lock fs-4"></i>
+        </div>
+        <div>
+            <h6 class="alert-heading fw-bold mb-1 text-info">Decentralized Vault Isolation</h6>
+            <p class="mb-0 small text-muted">
+                Encryption keys and initialization vectors (IV) are isolated from administrative control panels. They are injected securely at startup from environment configuration variables (e.g. Secret Manager) and never compiled, cached, or displayed in raw visual formats.
+            </p>
+        </div>
+    </div>
+
+    <!-- Status Overview Card -->
+    <div class="card-custom">
+        <div class="card-header bg-transparent">
+            <h5 class="mb-0 d-flex align-items-center gap-2 text-white">
+                <i class="bi bi-cpu-fill text-gradient"></i> Cryptographic Configuration Status
+            </h5>
+        </div>
+        <div class="card-body p-4 p-sm-5">
+            <div class="row g-4">
+                <!-- Status metrics -->
+                <div class="col-md-6 border-end border-secondary border-opacity-10">
+                    <h6 class="text-white fw-bold mb-3">Database Cipher Parameters</h6>
+                    <div class="d-flex flex-column gap-3">
+                        <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-secondary border-opacity-10">
+                            <span class="text-muted small">Encryption Algorithm</span>
+                            <span class="badge bg-dark border border-secondary border-opacity-25 text-success font-monospace">AES-256-CBC</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-secondary border-opacity-10">
+                            <span class="text-muted small">Key Injection Status</span>
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 font-monospace"><i class="bi bi-check-circle-fill me-1"></i>LOADED</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-secondary border-opacity-10">
+                            <span class="text-muted small">Initialization Vector (IV)</span>
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 font-monospace"><i class="bi bi-check-circle-fill me-1"></i>ACTIVE</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center py-2">
+                            <span class="text-muted small">Dynamic Re-keying Support</span>
+                            <span class="badge bg-secondary bg-opacity-10 text-muted border border-secondary border-opacity-25 font-monospace">STANDBY</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rules list -->
+                <div class="col-md-6">
+                    <h6 class="text-white fw-bold mb-3">Security Policy Operations</h6>
+                    <ul class="list-unstyled d-flex flex-column gap-3 mb-0">
+                        <li class="d-flex gap-2 text-muted small">
+                            <i class="bi bi-shield-check text-gradient fs-5 mt-1"></i>
+                            <div>
+                                <strong class="text-white">Active Target Columns:</strong> Medical history logs, primary and secondary diagnoses, and outpatient prescriptions are encrypted prior to database insertion.
+                            </div>
+                        </li>
+                        <li class="d-flex gap-2 text-muted small">
+                            <i class="bi bi-shield-check text-gradient fs-5 mt-1"></i>
+                            <div>
+                                <strong class="text-white">Transit Encryption:</strong> Transport Layer Security (TLS 1.3) protocols are enforced to secure cipher-text during client-server queries.
+                            </div>
+                        </li>
+                        <li class="d-flex gap-2 text-muted small">
+                            <i class="bi bi-shield-check text-gradient fs-5 mt-1"></i>
+                            <div>
+                                <strong class="text-white">Access Audits:</strong> Unwrapping and decrypting medical profiles issues an automatic log tracking the identity of the clinical viewer.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

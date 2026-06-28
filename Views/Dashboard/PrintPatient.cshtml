@@ -1,0 +1,165 @@
+@model MediVault.ViewModels.PatientRecordFormViewModel
+@{
+    ViewData["Title"] = "Print Patient Record";
+    Layout = null;
+    var isRedacted = (bool?)ViewBag.IsRedacted ?? false;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - MediVault</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        body { 
+            padding: 3rem; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #1e293b;
+            background: #ffffff;
+        }
+        .report-header {
+            border-bottom: 2px solid #0f172a;
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .report-section {
+            margin-bottom: 2rem;
+        }
+        .report-section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            color: #475569;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        .info-item {
+            margin-bottom: 0.5rem;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #64748b;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        .info-value {
+            font-size: 1rem;
+        }
+        .notes-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1.25rem;
+            font-family: monospace;
+            white-space: pre-line;
+            font-size: 0.9rem;
+        }
+        .sign-area {
+            margin-top: 4rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        .sign-line {
+            width: 220px;
+            border-top: 1px solid #0f172a;
+            text-align: center;
+            padding-top: 0.5rem;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+        @@media print {
+            .no-print { display: none !important; }
+            body { padding: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print d-flex gap-2 mb-4">
+        <button class="btn btn-dark px-4" onclick="window.print()">Print Report</button>
+        <a class="btn btn-danger px-3" asp-action="ExportPatientPdf" asp-route-id="@Model.Id">Download PDF</a>
+        <a class="btn btn-outline-secondary px-3" asp-action="RecordOfficer">Back</a>
+    </div>
+
+    <!-- Letterhead -->
+    <div class="report-header d-flex justify-content-between align-items-end">
+        <div>
+            <h2 class="fw-bold mb-0">MediVault Health Center</h2>
+            <p class="text-muted mb-0 small">Secure Clinical Record System Dossier</p>
+        </div>
+        <div class="text-end">
+            <span class="badge bg-secondary p-2 uppercase" style="font-size: 0.75rem;">@(isRedacted ? "Redacted Records Report" : "Confidential Report")</span>
+            <p class="text-muted small mb-0 mt-1">Generated: @DateTime.Now.ToString("g")</p>
+        </div>
+    </div>
+
+    <!-- Demographics -->
+    <div class="report-section">
+        <div class="report-section-title">Patient Profile Information</div>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Full Name</div>
+                <div class="info-value fw-bold text-dark">@Model.FirstName @Model.LastName</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Patient Record Reference</div>
+                <div class="info-value font-monospace">#@Model.Id.ToString("D4")</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Patient Age</div>
+                <div class="info-value">@Model.Age Years</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Ward Clinical Status</div>
+                <div class="info-value">@Model.Status</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Primary Diagnosis</div>
+                <div class="info-value fw-semibold text-dark">@Model.Diagnosis</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Admission Timestamp</div>
+                <div class="info-value">@Model.DateAdmitted.ToString("D")</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clinical History -->
+    <div class="report-section">
+        <div class="report-section-title">@(isRedacted ? "Clinical Care Progress History - Redacted" : "Clinical Care Progress History")</div>
+        <div class="notes-box">@(string.IsNullOrWhiteSpace(Model.MedicalHistory) ? "No clinical notes registered." : Model.MedicalHistory)</div>
+    </div>
+
+    <div class="row">
+        <div class="col-6">
+            <div class="report-section">
+                <div class="report-section-title">Detailed Diagnoses</div>
+                <div class="notes-box">@(string.IsNullOrWhiteSpace(Model.Diagnoses) ? "No secondary diagnoses registered." : Model.Diagnoses)</div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="report-section">
+                <div class="report-section-title">Active Outpatient Prescriptions</div>
+                <div class="notes-box">@(string.IsNullOrWhiteSpace(Model.Prescriptions) ? "No prescriptions active." : Model.Prescriptions)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signatures -->
+    <div class="sign-area">
+        <div class="sign-line">
+            Attending Physician Signature
+        </div>
+        <div class="sign-line">
+            Records Registrar Verification
+        </div>
+    </div>
+</body>
+</html>
