@@ -41,6 +41,19 @@ html, body {
   background-attachment: fixed;
 }
 
+/* Prevent stacking context issues */
+body {
+  position: relative;
+  z-index: auto;
+}
+
+/* Ensure main content doesn't interfere with dropdowns */
+main[role="main"] {
+  position: relative;
+  z-index: auto;
+  overflow: visible;
+}
+
 /* Glassmorphism Containers */
 .glass-panel {
   background: var(--bg-glass);
@@ -80,7 +93,13 @@ h1, h2, h3, h4, h5, h6 {
   border-bottom: 1px solid var(--border-light);
   padding: 0.8rem 1.5rem;
   position: relative;
-  z-index: 1100;
+  z-index: 1050;
+}
+
+.navbar-custom .container-fluid,
+.navbar-custom .navbar-collapse,
+.navbar-custom .user-menu {
+  overflow: visible;
 }
 
 .navbar-custom .navbar-brand {
@@ -109,31 +128,106 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Dropdowns */
-.dropdown-menu-custom {
-  background: var(--bg-secondary) !important;
-  border: 1px solid var(--border-light) !important;
-  border-radius: 12px !important;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
-  padding: 0.5rem !important;
-  z-index: 1200 !important;
+.user-menu {
+  position: relative;
 }
 
-.logout-form {
-  display: block;
-  margin: 0;
+.user-menu-toggle {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid var(--border-light) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  color: var(--text-main) !important;
+  min-width: 240px;
+  text-align: left;
+}
+
+.user-menu-toggle::after {
+  margin-left: auto;
+}
+
+.user-menu-toggle:focus,
+.user-menu-toggle:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(0, 242, 254, 0.12) !important;
+}
+
+.user-menu-name {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Fix Bootstrap navbar collapse overflow issues */
+.navbar-collapse {
+  overflow: visible !important;
+}
+
+.navbar-nav {
+  overflow: visible !important;
+}
+
+.nav-item.dropdown {
+  position: static;
+}
+
+@media (max-width: 991.98px) {
+  .nav-item.dropdown {
+    position: relative;
+  }
+}
+
+.dropdown-menu-custom {
+  background: rgba(15, 23, 42, 0.98) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-light) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.55) !important;
+  padding: 0.75rem !important;
+  min-width: 320px;
+  max-width: min(360px, calc(100vw - 1rem));
+  overflow: visible;
+  z-index: 99999 !important;
+  pointer-events: all !important;
+  position: absolute !important;
+  transform: none !important;
+  will-change: auto !important;
+}
+
+.dropdown-menu-custom * {
+  pointer-events: all !important;
 }
 
 .dropdown-menu-custom .dropdown-item {
   color: var(--text-muted) !important;
   border-radius: 8px;
-  padding: 0.6rem 1rem;
+  padding: 0.8rem 1rem;
   transition: all 0.2s ease;
   text-align: left;
+  pointer-events: all !important;
+  position: relative;
+  z-index: 99999;
+  cursor: pointer !important;
+  display: block !important;
+  width: 100% !important;
+  border: none !important;
+  background: none !important;
 }
 
 .dropdown-menu-custom .dropdown-item:hover {
   background: rgba(255, 255, 255, 0.05) !important;
   color: var(--accent-cyan) !important;
+}
+
+.dropdown-menu-custom .dropdown-item + .dropdown-item,
+.dropdown-menu-custom .logout-form {
+  margin-top: 0.35rem;
+}
+
+.dropdown-menu-custom .dropdown-divider {
+  margin: 0.6rem 0;
 }
 
 .dropdown-menu-custom .dropdown-item.text-danger {
@@ -1244,6 +1338,66 @@ body, .glass-panel, .card-custom, .navbar-custom, .footer-custom,
   color: var(--text-muted) !important;
 }
 
+[data-theme="light"] .surface-panel {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(15, 23, 42, 0.08);
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.05);
+}
+
+[data-theme="light"] .text-gradient {
+  background: linear-gradient(135deg, #0096c7 0%, #0077b6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+[data-theme="light"] .section-kicker,
+[data-theme="light"] .auth-hero-badge {
+  border-color: rgba(0, 180, 216, 0.18);
+  background: rgba(0, 180, 216, 0.06);
+  color: #007791;
+}
+
+[data-theme="light"] .auth-hero-icon {
+  background: linear-gradient(135deg, rgba(0, 180, 216, 0.1), rgba(99, 102, 241, 0.1));
+  border-color: rgba(15, 23, 42, 0.08);
+  color: #007791;
+  box-shadow: 0 10px 25px rgba(0, 180, 216, 0.08);
+}
+
+[data-theme="light"] .auth-benefit,
+[data-theme="light"] .auth-stat,
+[data-theme="light"] .metric-card {
+  background: rgba(15, 23, 42, 0.02);
+  border-color: rgba(15, 23, 42, 0.06);
+}
+
+[data-theme="light"] .auth-benefit i {
+  color: #007791;
+}
+
+[data-theme="light"] .auth-form-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(15, 23, 42, 0.08);
+}
+
+[data-theme="light"] .auth-mini-link {
+  color: var(--accent-blue);
+}
+
+[data-theme="light"] .auth-mini-link:hover {
+  color: #0077b6;
+}
+
+[data-theme="light"] #themeToggleBtn {
+  background: rgba(15, 23, 42, 0.05) !important;
+  color: var(--text-muted) !important;
+}
+
+[data-theme="light"] #themeToggleBtn:hover {
+  background: rgba(15, 23, 42, 0.08) !important;
+  color: var(--text-main) !important;
+}
+
 [data-theme="light"] .btn-premium-secondary {
   border-color: rgba(15, 23, 42, 0.15);
   color: var(--text-main);
@@ -1256,7 +1410,9 @@ body, .glass-panel, .card-custom, .navbar-custom, .footer-custom,
 }
 
 [data-theme="light"] .dropdown-menu-custom {
-  background: #ffffff !important;
+  background: rgba(255, 255, 255, 0.98) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(15, 23, 42, 0.08) !important;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1) !important;
 }
@@ -1318,6 +1474,398 @@ body, .glass-panel, .card-custom, .navbar-custom, .footer-custom,
 [data-theme="light"] code {
   background: rgba(15, 23, 42, 0.05) !important;
   color: var(--accent-blue) !important;
+}
+
+/* App Shell */
+.app-shell {
+  position: relative;
+}
+
+.app-shell::before,
+.app-shell::after {
+  content: "";
+  position: fixed;
+  border-radius: 999px;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(24px);
+  opacity: 0.85;
+}
+
+.app-shell::before {
+  top: 110px;
+  right: -120px;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(0, 242, 254, 0.12) 0%, transparent 68%);
+}
+
+.app-shell::after {
+  left: -140px;
+  bottom: 40px;
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle, rgba(79, 70, 229, 0.11) 0%, transparent 70%);
+}
+
+.app-surface,
+.app-main,
+header,
+footer {
+  position: relative;
+  z-index: 1;
+}
+
+header {
+  z-index: 1100;
+}
+
+.navbar-custom {
+  z-index: 1101;
+}
+
+.app-main {
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+.site-section {
+  padding: clamp(1.5rem, 3vw, 2.75rem) 0;
+}
+
+.section-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.42rem 0.78rem;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 242, 254, 0.22);
+  background: rgba(0, 242, 254, 0.08);
+  color: var(--accent-cyan);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.page-title {
+  font-size: clamp(2.2rem, 4vw, 4rem);
+  line-height: 0.96;
+  letter-spacing: -0.05em;
+}
+
+.page-copy {
+  max-width: 62ch;
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+
+.surface-panel {
+  background: linear-gradient(180deg, rgba(18, 24, 38, 0.92), rgba(9, 14, 24, 0.92));
+  border: 1px solid var(--surface-border, rgba(255, 255, 255, 0.09));
+  border-radius: 24px;
+  box-shadow: var(--surface-shadow, 0 24px 60px rgba(0, 0, 0, 0.32));
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+  gap: 1.25rem;
+  align-items: center;
+}
+
+.hero-panel {
+  padding: clamp(1.5rem, 3vw, 2.6rem);
+}
+
+.hero-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.metric-card {
+  padding: 1rem 1.05rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-light);
+}
+
+.metric-card strong {
+  display: block;
+  font-size: 1.1rem;
+  margin-bottom: 0.2rem;
+}
+
+.metric-card span {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.feature-card {
+  padding: 1.2rem;
+  border-radius: 20px;
+  border: 1px solid var(--border-light);
+  background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.02));
+}
+
+.feature-card .icon-bubble {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 0.9rem;
+}
+
+.feature-card h4 {
+  font-size: 1.05rem;
+}
+
+.feature-card p {
+  color: var(--text-muted);
+  margin-bottom: 0;
+  line-height: 1.65;
+}
+
+.auth-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(340px, 1.05fr);
+  gap: 1.25rem;
+  align-items: stretch;
+  min-height: min(760px, calc(100vh - 220px));
+  margin: 0 auto;
+}
+
+.auth-shell--centered {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 920px;
+  min-height: auto;
+}
+
+.auth-hero {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.auth-hero::before,
+.auth-hero::after {
+  content: "";
+  position: absolute;
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.auth-hero::before {
+  inset: auto -40px -80px auto;
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(circle, rgba(0, 242, 254, 0.14), transparent 70%);
+}
+
+.auth-hero::after {
+  inset: 36px auto auto 36px;
+  width: 160px;
+  height: 160px;
+  background: radial-gradient(circle, rgba(79, 70, 229, 0.16), transparent 68%);
+}
+
+.auth-hero-panel {
+  height: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.auth-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: fit-content;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 242, 254, 0.2);
+  background: rgba(0, 242, 254, 0.08);
+  color: var(--accent-cyan);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.auth-hero-icon {
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  border-radius: 22px;
+  background: linear-gradient(135deg, rgba(0, 242, 254, 0.18), rgba(79, 70, 229, 0.18));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--accent-cyan);
+  box-shadow: 0 18px 36px rgba(0, 242, 254, 0.12);
+}
+
+.auth-hero-icon i {
+  font-size: 1.9rem;
+}
+
+.auth-hero-title {
+  margin: 1rem 0 0.75rem;
+  font-size: clamp(2rem, 3.5vw, 3.3rem);
+  line-height: 0.95;
+  letter-spacing: -0.06em;
+}
+
+.auth-hero-copy {
+  color: var(--text-muted);
+  max-width: 48ch;
+  line-height: 1.7;
+}
+
+.auth-hero-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.auth-stat {
+  padding: 0.95rem 1rem;
+  border-radius: 18px;
+  border: 1px solid var(--border-light);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.auth-stat strong {
+  display: block;
+  font-size: 1.06rem;
+  color: var(--text-main);
+}
+
+.auth-stat span {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.auth-benefits {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.auth-benefit {
+  display: flex;
+  gap: 0.8rem;
+  align-items: flex-start;
+  padding: 0.9rem 0.95rem;
+  border-radius: 16px;
+  border: 1px solid var(--border-light);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.auth-benefit i {
+  color: var(--accent-cyan);
+  margin-top: 0.1rem;
+}
+
+.auth-form {
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.auth-form-inner {
+  max-width: 560px;
+  margin-left: auto;
+}
+
+.auth-form--centered .auth-form-inner {
+  margin: 0 auto;
+}
+
+.auth-form-card {
+  padding: clamp(1.25rem, 2vw, 1.75rem);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.auth-form-title {
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.auth-form-subtitle {
+  color: var(--text-muted);
+  line-height: 1.7;
+  max-width: 48ch;
+}
+
+.auth-mini-link {
+  color: var(--accent-cyan);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.auth-mini-link:hover {
+  color: #9eefff;
+}
+
+.auth-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+  margin: 1.25rem 0;
+}
+
+.auth-note {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+@media (max-width: 991.98px) {
+  .auth-shell,
+  .hero-grid,
+  .feature-grid,
+  .hero-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-form-inner {
+    margin: 0;
+  }
+
+  .auth-hero {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .auth-shell,
+  .auth-shell--centered {
+    gap: 0.9rem;
+  }
+
+  .auth-hero-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .page-title,
+  .auth-form-title,
+  .auth-hero-title {
+    line-height: 1.02;
+  }
 }
 
 /* =============================================
@@ -2086,4 +2634,297 @@ body, .glass-panel, .card-custom, .navbar-custom, .footer-custom,
 
 [data-theme="light"] .mfa-qr-frame {
   box-shadow: 0 4px 20px rgba(15,23,42,0.12);
+}
+
+/* Additional fixes for dropdown positioning and z-index issues */
+.dropdown-menu.show {
+  z-index: 9999 !important;
+  position: absolute !important;
+  pointer-events: auto !important;
+}
+
+/* Force Bootstrap dropdown positioning */
+.dropdown {
+  position: relative !important;
+}
+
+.dropdown-menu {
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+}
+
+/* Ensure dropdown items are fully interactive */
+.dropdown-menu-custom a,
+.dropdown-menu-custom button,
+.dropdown-menu-custom .dropdown-item {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  position: relative !important;
+  z-index: 10001 !important;
+}
+
+/* Fix logout form button specifically */
+.dropdown-menu-custom .logout-form button[type="submit"] {
+  background: none !important;
+  border: none !important;
+  width: 100% !important;
+  text-align: left !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  z-index: 10001 !important;
+}
+
+/* COMPREHENSIVE LOGOUT FORM AND DROPDOWN FIXES */
+.logout-form {
+  display: block !important;
+  margin: 0 !important;
+  pointer-events: all !important;
+  position: relative !important;
+  z-index: 99999 !important;
+  width: 100% !important;
+}
+
+.logout-form button,
+.logout-form button[type="submit"] {
+  pointer-events: all !important;
+  cursor: pointer !important;
+  z-index: 99999 !important;
+  position: relative !important;
+  background: none !important;
+  border: none !important;
+  width: 100% !important;
+  text-align: left !important;
+  color: #fb7185 !important;
+  border-radius: 8px !important;
+  padding: 0.8rem 1rem !important;
+  transition: all 0.2s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  font-size: inherit !important;
+  font-family: inherit !important;
+}
+
+.logout-form button:hover,
+.logout-form button[type="submit"]:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #fecdd3 !important;
+}
+
+/* Force all dropdown items to be clickable */
+.dropdown-menu-custom a[href],
+.dropdown-menu-custom button,
+.dropdown-menu-custom .dropdown-item {
+  pointer-events: all !important;
+  cursor: pointer !important;
+  z-index: 99999 !important;
+  position: relative !important;
+}
+
+/* User menu panel complete override */
+.user-menu-panel {
+  overflow: visible !important;
+  pointer-events: all !important;
+  z-index: 99999 !important;
+  position: relative !important;
+}
+
+.user-menu-panel * {
+  pointer-events: all !important;
+}
+
+.user-menu-header {
+  padding: 0.5rem 0.5rem 0.75rem;
+  pointer-events: none !important;
+}
+
+/* Ensure no container clips dropdowns */
+.container,
+.container-fluid,
+.row,
+.col {
+  overflow: visible !important;
+}
+
+/* Fix any potential transform issues */
+header,
+.navbar,
+.navbar-custom {
+  transform: none !important;
+  contain: none !important;
+}
+
+/* CUSTOM DROPDOWN IMPLEMENTATION - COMPLETELY BYPASSES BOOTSTRAP */
+.user-menu-custom {
+  position: relative;
+}
+
+.user-menu-trigger {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid var(--border-light) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  color: var(--text-main) !important;
+  min-width: 240px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.user-menu-trigger:hover,
+.user-menu-trigger:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(0, 242, 254, 0.12) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.custom-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 320px;
+  max-width: min(360px, calc(100vw - 1rem));
+  background: rgb(15, 23, 42) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-light) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.55) !important;
+  z-index: 99999 !important;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+.custom-dropdown-menu.show {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateY(0) !important;
+  pointer-events: auto !important;
+}
+
+.custom-dropdown-content {
+  padding: 0.75rem;
+  pointer-events: auto !important;
+}
+
+.custom-dropdown-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  width: 100% !important;
+  padding: 0.8rem 1rem !important;
+  border: none !important;
+  background: none !important;
+  color: var(--text-muted) !important;
+  text-decoration: none !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+  margin-bottom: 0.35rem !important;
+  font-size: inherit !important;
+  font-family: inherit !important;
+  text-align: left !important;
+  pointer-events: auto !important;
+}
+
+.custom-dropdown-item:hover,
+.custom-dropdown-item:focus {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--accent-cyan) !important;
+  text-decoration: none !important;
+  outline: none !important;
+}
+
+.custom-dropdown-item:active {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.logout-btn {
+  color: #fb7185 !important;
+}
+
+.logout-btn:hover {
+  color: #fecdd3 !important;
+  background: rgba(251, 113, 133, 0.1) !important;
+}
+
+.logout-form-custom {
+  margin: 0 !important;
+  width: 100% !important;
+  pointer-events: auto !important;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: var(--border-light);
+  margin: 0.6rem 0;
+  border: none;
+}
+
+.user-menu-header {
+  padding: 0.5rem 0.5rem 0.75rem;
+  margin-bottom: 0;
+}
+
+.user-menu-email {
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+/* Ensure all interactive elements work */
+.custom-dropdown-menu * {
+  pointer-events: auto !important;
+}
+
+.custom-dropdown-menu a,
+.custom-dropdown-menu button {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
+
+/* Light theme overrides */
+[data-theme="light"] .custom-dropdown-menu {
+  background: rgb(255, 255, 255) !important;
+  border-color: rgba(15, 23, 42, 0.08) !important;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1) !important;
+}
+
+[data-theme="light"] .custom-dropdown-item:hover {
+  background: rgba(15, 23, 42, 0.04) !important;
+}
+
+/* Ensure page content doesn't create stacking contexts that interfere */
+.card-custom,
+.glass-panel,
+.surface-panel {
+  z-index: auto;
+  contain: layout style;
+}
+
+/* Disabled user styling */
+.user-row-disabled {
+  opacity: 0.6;
+  background: rgba(255, 255, 255, 0.01) !important;
+}
+
+.user-row-disabled:hover {
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+.user-email-disabled {
+  color: var(--text-muted) !important;
+}
+
+.status-badge-disabled {
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: #ef4444 !important;
+  border-color: rgba(239, 68, 68, 0.25) !important;
+}
+
+.status-badge-active {
+  background: rgba(16, 185, 129, 0.1) !important;
+  color: #10b981 !important;
+  border-color: rgba(16, 185, 129, 0.25) !important;
 }

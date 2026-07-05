@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MediVault")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3f7e85357826399b009329b17df6c463ed34c3dd")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3c89fa730e2c22cf066d1d6f8bc8a22608137f7e")]
 [assembly: System.Reflection.AssemblyProductAttribute("MediVault")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MediVault")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

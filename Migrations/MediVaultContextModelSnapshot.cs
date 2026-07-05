@@ -40,6 +40,9 @@ namespace MediVault.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
@@ -155,6 +158,10 @@ namespace MediVault.Migrations
 
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("UserEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -486,6 +493,12 @@ namespace MediVault.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("MediVault.Models.PatientRecord", b =>
+                {
+                    b.Navigation("Appointments");
+
+                    b.Navigation("BillingRecords");
+                });
 #pragma warning restore 612, 618
         }
     }

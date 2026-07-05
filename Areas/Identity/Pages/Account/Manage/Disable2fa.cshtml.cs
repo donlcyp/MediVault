@@ -49,7 +49,7 @@ public class Disable2faModel : PageModel
             await _audit.LogAsync(
                 user.Id,
                 "TwoFactorDisableBlocked",
-                $"Attempted to disable MFA for system administrator {user.Email}.",
+                "Attempted to disable MFA for system administrator",
                 "User",
                 user.Email ?? user.Id);
             return Forbid();
@@ -76,7 +76,7 @@ public class Disable2faModel : PageModel
             await _audit.LogAsync(
                 user.Id,
                 "TwoFactorDisableBlocked",
-                $"Attempted to disable MFA for system administrator {user.Email}.",
+                "Attempted to disable MFA for system administrator",
                 "User",
                 user.Email ?? user.Id);
             return Forbid();
@@ -92,7 +92,7 @@ public class Disable2faModel : PageModel
         await _audit.LogAsync(
             user.Id,
             "TwoFactorDisabled",
-            $"User {user.Email} disabled authenticator-based MFA.",
+            "User disabled authenticator-based MFA.",
             "User",
             user.Email ?? user.Id);
         StatusMessage = "2fa has been disabled. You can reenable 2fa when you setup an authenticator app";

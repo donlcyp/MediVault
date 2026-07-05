@@ -82,8 +82,8 @@
 
         <form method="get" class="row g-3">
             <div class="col-md-3 col-sm-6">
-                <label for="filterUser" class="form-label text-muted small">Operator / User ID</label>
-                <input type="text" id="filterUser" name="user" class="form-control form-input-custom" placeholder="Filter by operator..." value="@Model.FilterUser">
+                <label for="filterUser" class="form-label text-muted small">Operator Email / User ID</label>
+                <input type="text" id="filterUser" name="user" class="form-control form-input-custom" placeholder="Filter by email or ID..." value="@Model.FilterUser">
             </div>
 
             <div class="col-md-3 col-sm-6">
@@ -178,6 +178,7 @@
                         <thead>
                             <tr>
                                 <th>Timestamp</th>
+                                <th>Operator Email</th>
                                 <th>Operator User ID</th>
                                 <th>Action Category</th>
                                 <th>Target Entity</th>
@@ -194,7 +195,10 @@
                                         <small class="text-muted"><i class="bi bi-clock me-1"></i>@log.Timestamp.ToString("g")</small>
                                     </td>
                                     <td>
-                                        <code class="small text-white" style="font-family: 'JetBrains Mono', monospace;">@log.UserId</code>
+                                        <div class="small text-white">@log.UserEmail</div>
+                                    </td>
+                                    <td>
+                                        <code class="small text-muted" style="font-family: 'JetBrains Mono', monospace;">@log.UserId</code>
                                     </td>
                                     <td>
                                         <span class="badge bg-@GetActionBadgeColor(log.Action) bg-opacity-10 text-@GetActionBadgeColor(log.Action) border border-@GetActionBadgeColor(log.Action) border-opacity-25" style="border-radius: 6px;">
@@ -205,7 +209,7 @@
                                         <small class="fw-semibold">@log.EntityType</small>
                                     </td>
                                     <td>
-                                        <small class="text-muted">@log.Details</small>
+                                        <small class="text-muted">@log.Description</small>
                                     </td>
                                     <td>
                                         <code class="small text-muted" style="font-family: 'JetBrains Mono', monospace;">@log.IpAddress</code>

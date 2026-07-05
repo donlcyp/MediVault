@@ -133,7 +133,7 @@ public class LoginModel : PageModel
                 var user = await _userManager.FindByEmailAsync(Input.Email);
                 if (user != null)
                 {
-                    await _audit.LogAsync(user.Id, "Login", $"User {Input.Email} signed in", "User", Input.Email);
+                    await _audit.LogAsync(user.Id, "Login", "User signed in", "User", Input.Email, Input.Email);
                 }
 
                 return LocalRedirect(returnUrl);
@@ -142,10 +142,15 @@ public class LoginModel : PageModel
             {
                 return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
             }
+            if (result.IsNotAllowed)
+            {
+                ModelState.AddModelError(string.Empty, "This account cannot sign in. Contact your administrator.");
+                return Page();
+            }
             if (result.IsLockedOut)
             {
                 _logger.LogWarning("User account locked out.");
-                await _audit.LogAsync(Input.Email, "Lockout", $"Account locked after failed login attempts for {Input.Email}", "User", Input.Email);
+                await _audit.LogAsync(Input.Email, "Lockout", "Account locked after failed login attempts", "User", Input.Email, Input.Email);
                 return RedirectToPage("./Lockout");
             }
             else
@@ -154,8 +159,9 @@ public class LoginModel : PageModel
                 await _audit.LogAsync(
                     attemptedUser?.Id ?? Input.Email,
                     "LoginFailed",
-                    $"Failed login attempt for {Input.Email}",
+                    "Failed login attempt",
                     "User",
+                    Input.Email,
                     Input.Email);
                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                 return Page();

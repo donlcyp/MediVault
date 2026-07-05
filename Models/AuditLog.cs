@@ -11,6 +11,9 @@ public class AuditLog
     public string UserId { get; set; } = string.Empty;
 
     [Required]
+    public string UserEmail { get; set; } = string.Empty;
+
+    [Required]
     public string Action { get; set; } = string.Empty;
 
     [Required]

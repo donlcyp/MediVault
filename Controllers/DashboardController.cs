@@ -5,6 +5,7 @@ using MediVault.Services;
 using MediVault.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,7 @@ public class DashboardController : Controller
     private readonly AuditQueryService _auditQuery;
     private readonly PdfReportService _pdf;
     private readonly AuditService _audit;
+    private readonly IEmailSender _emailSender;
 
     public DashboardController(
         UserManager<ApplicationUser> userManager,
@@ -33,7 +35,8 @@ public class DashboardController : Controller
         RecordAccessService recordAccess,
         AuditQueryService auditQuery,
         PdfReportService pdf,
-        AuditService audit)
+        AuditService audit,
+        IEmailSender emailSender)
     {
         _userManager = userManager;
         _roleManager = roleManager;
@@ -44,6 +47,7 @@ public class DashboardController : Controller
         _auditQuery = auditQuery;
         _pdf = pdf;
         _audit = audit;
+        _emailSender = emailSender;
     }
 
     [HttpGet]
@@ -776,6 +780,7 @@ public class DashboardController : Controller
                 Id = user.Id,
                 Email = user.Email ?? user.UserName ?? "unknown",
                 EmailConfirmed = user.EmailConfirmed,
+                IsEnabled = user.IsEnabled,
                 Roles = await _userManager.GetRolesAsync(user)
             });
         }
@@ -787,7 +792,7 @@ public class DashboardController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = Roles.SystemAdministrator)]
-    public async Task<IActionResult> AssignRole(RoleAssignmentViewModel model)
+    public async Task<IActionResult> ToggleUserStatus(UserStatusToggleViewModel model)
     {
         var user = await _userManager.FindByIdAsync(model.UserId);
         if (user == null)
@@ -795,30 +800,45 @@ public class DashboardController : Controller
             return NotFound();
         }
 
-        if (!Roles.All.Contains(model.Role))
+        var currentUser = await _userManager.GetUserAsync(User);
+        if (user.Id == currentUser!.Id)
         {
-            TempData["Error"] = "Invalid role selected.";
+            TempData["Error"] = "You cannot disable your own administrator account.";
             return RedirectToAction(nameof(UserManagement));
         }
 
-        var currentUser = await _userManager.GetUserAsync(User);
-        var existingRoles = await _userManager.GetRolesAsync(user);
+        user.IsEnabled = model.IsEnabled;
+        var result = await _userManager.UpdateAsync(user);
 
-        foreach (var role in existingRoles)
+        if (result.Succeeded)
         {
-            await _userManager.RemoveFromRoleAsync(user, role);
+            var action = model.IsEnabled ? "EnableUser" : "DisableUser";
+            var statusText = model.IsEnabled ? "enabled" : "disabled";
+            
+            await _audit.LogAsync(
+                currentUser.Id,
+                action,
+                $"{statusText.ToUpper()}: {user.Email}",
+                "User",
+                $"User account {statusText}");
+
+            TempData["Success"] = $"Successfully {statusText} user account {user.Email}.";
+        }
+        else
+        {
+            TempData["Error"] = $"Failed to update user status for {user.Email}.";
         }
 
-        await _userManager.AddToRoleAsync(user, model.Role);
+        return RedirectToAction(nameof(UserManagement));
+    }
 
-        await _audit.LogAsync(
-            currentUser!.Id,
-            "UpdateUserRole",
-            $"Changed role for {user.Email}",
-            "User",
-            $"Assigned role: {model.Role}");
-
-        TempData["Success"] = $"Role updated for {user.Email}.";
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = Roles.SystemAdministrator)]
+    public async Task<IActionResult> AssignRole(RoleAssignmentViewModel model)
+    {
+        // Role assignment has been disabled for security
+        TempData["Error"] = "Role assignment has been disabled. Contact system administrator.";
         return RedirectToAction(nameof(UserManagement));
     }
 
@@ -826,15 +846,9 @@ public class DashboardController : Controller
     [Authorize(Roles = Roles.SystemAdministrator)]
     public IActionResult RoleManagement()
     {
-        ViewBag.Roles = new[]
-        {
-            new { Name = Roles.SystemAdministrator, Description = "Full system access, user management, system configurations, encryption keys, and audit logs." },
-            new { Name = Roles.Doctor, Description = "Clinical access to active patient records." },
-            new { Name = Roles.Nurse, Description = "Care access to active patients and care notes." },
-            new { Name = Roles.RecordOfficer, Description = "Administrative records, scheduling, and printing." }
-        };
-
-        return View();
+        // Role management has been disabled for security
+        TempData["Error"] = "Role management has been disabled. Contact system administrator.";
+        return RedirectToAction(nameof(Admin));
     }
 
     [HttpGet]
@@ -855,8 +869,8 @@ public class DashboardController : Controller
     [Authorize(Roles = Roles.SystemAdministrator)]
     public IActionResult CreateStaffUser()
     {
-        ViewBag.StaffRoles = new[] { Roles.Doctor, Roles.Nurse, Roles.RecordOfficer };
-        return View(new CreateStaffUserViewModel());
+        ViewBag.StaffRoles = Roles.Staff;
+        return View();
     }
 
     [HttpPost]
@@ -864,23 +878,17 @@ public class DashboardController : Controller
     [Authorize(Roles = Roles.SystemAdministrator)]
     public async Task<IActionResult> CreateStaffUser(CreateStaffUserViewModel model)
     {
-        ViewBag.StaffRoles = new[] { Roles.Doctor, Roles.Nurse, Roles.RecordOfficer };
-
         if (!ModelState.IsValid)
         {
-            return View(model);
-        }
-
-        if (model.Role != Roles.Doctor && model.Role != Roles.Nurse && model.Role != Roles.RecordOfficer)
-        {
-            ModelState.AddModelError("Role", "Invalid role selected. Only Doctor, Nurse, or RecordOfficer can be created.");
+            ViewBag.StaffRoles = Roles.Staff;
             return View(model);
         }
 
         var existingUser = await _userManager.FindByEmailAsync(model.Email);
         if (existingUser != null)
         {
-            ModelState.AddModelError("Email", "Email is already taken.");
+            ModelState.AddModelError("Email", "A user with this email address already exists.");
+            ViewBag.StaffRoles = Roles.Staff;
             return View(model);
         }
 
@@ -888,7 +896,8 @@ public class DashboardController : Controller
         {
             UserName = model.Email,
             Email = model.Email,
-            EmailConfirmed = true
+            EmailConfirmed = false, // Require email verification
+            IsEnabled = true
         };
 
         var result = await _userManager.CreateAsync(user, model.Password);
@@ -896,15 +905,38 @@ public class DashboardController : Controller
         {
             await _userManager.AddToRoleAsync(user, model.Role);
 
-            var adminUser = await _userManager.GetUserAsync(User);
+            // Log administrative action
+            var currentUser = await _userManager.GetUserAsync(User);
             await _audit.LogAsync(
-                adminUser!.Id,
-                "CreateUser",
-                $"Created staff account for {user.Email}",
+                currentUser!.Id,
+                "CreateStaffUser",
+                $"Created staff account for {model.Email} with role {model.Role}",
                 "User",
-                $"Assigned role: {model.Role}");
+                $"Assigned Role: {model.Role}");
 
-            TempData["Success"] = $"Successfully created {model.Role} account for {user.Email}.";
+            // Send verification email
+            try
+            {
+                var userId = await _userManager.GetUserIdAsync(user);
+                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                code = Microsoft.AspNetCore.WebUtilities.WebEncoders.Base64UrlEncode(System.Text.Encoding.UTF8.GetBytes(code));
+                var callbackUrl = Url.Page(
+                    "/Account/ConfirmEmail",
+                    pageHandler: null,
+                    values: new { area = "Identity", userId = userId, code = code },
+                    protocol: Request.Scheme)!;
+
+                await _emailSender.SendEmailAsync(
+                    model.Email,
+                    "Confirm your email",
+                    $"Please confirm your account by <a href='{System.Text.Encodings.Web.HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+            }
+            catch (Exception)
+            {
+                TempData["Warning"] = "Account created, but verification email could not be sent.";
+            }
+
+            TempData["Success"] = $"Successfully provisioned staff account for {model.Email}.";
             return RedirectToAction(nameof(UserManagement));
         }
 
@@ -913,6 +945,7 @@ public class DashboardController : Controller
             ModelState.AddModelError(string.Empty, error.Description);
         }
 
+        ViewBag.StaffRoles = Roles.Staff;
         return View(model);
     }
 
@@ -931,6 +964,13 @@ public class DashboardController : Controller
         if (user.Id == currentUser!.Id)
         {
             TempData["Error"] = "You cannot delete your own administrator account.";
+            return RedirectToAction(nameof(UserManagement));
+        }
+
+        // Optional: Require users to be disabled before deletion for safety
+        if (user.IsEnabled)
+        {
+            TempData["Error"] = "Please disable the user account before deletion for safety.";
             return RedirectToAction(nameof(UserManagement));
         }
 

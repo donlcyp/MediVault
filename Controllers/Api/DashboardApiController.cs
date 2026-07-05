@@ -58,7 +58,7 @@ public class DashboardApiController : ControllerBase
                 recentAuditLogs = await _context.AuditLogs
                     .OrderByDescending(x => x.Timestamp)
                     .Take(10)
-                    .Select(x => new { x.Id, x.Timestamp, x.UserId, x.Action, x.EntityType, x.Description })
+                    .Select(x => new { x.Id, x.Timestamp, x.UserEmail, x.UserId, x.Action, x.EntityType, x.Description })
                     .ToListAsync()
             };
         }
@@ -184,7 +184,7 @@ public class DashboardApiController : ControllerBase
         var logs = await _auditQuery.ApplyFilters(_context.AuditLogs.AsQueryable(), user, action, entityType, date)
             .OrderByDescending(x => x.Timestamp)
             .Take(50)
-            .Select(x => new { x.Id, x.Timestamp, x.UserId, x.Action, x.EntityType, x.Description, x.Details, x.IpAddress })
+            .Select(x => new { x.Id, x.Timestamp, x.UserEmail, x.UserId, x.Action, x.EntityType, x.Description, x.Details, x.IpAddress })
             .ToListAsync();
 
         return Ok(new { logs });

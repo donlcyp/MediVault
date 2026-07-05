@@ -116,19 +116,19 @@ public class LoginWith2faModel : PageModel
         if (result.Succeeded)
         {
             _logger.LogInformation("User with ID '{UserId}' logged in with 2fa.", user.Id);
-            await _audit.LogAsync(userId, "Login", $"User {user.Email} signed in with MFA", "User", user.Email ?? userId);
+            await _audit.LogAsync(userId, "Login", "User signed in with MFA", "User", user.Email ?? userId, user.Email ?? userId);
             return LocalRedirect(returnUrl);
         }
         else if (result.IsLockedOut)
         {
             _logger.LogWarning("User with ID '{UserId}' account locked out.", user.Id);
-            await _audit.LogAsync(userId, "Lockout", $"Account locked during MFA for {user.Email}", "User", user.Email ?? userId);
+            await _audit.LogAsync(userId, "Lockout", "Account locked during MFA", "User", user.Email ?? userId, user.Email ?? userId);
             return RedirectToPage("./Lockout");
         }
         else
         {
             _logger.LogWarning("Invalid authenticator code entered for user with ID '{UserId}'.", user.Id);
-            await _audit.LogAsync(userId, "LoginFailed", $"Invalid MFA code for {user.Email}", "User", user.Email ?? userId);
+            await _audit.LogAsync(userId, "LoginFailed", "Invalid MFA code", "User", user.Email ?? userId, user.Email ?? userId);
             ModelState.AddModelError(string.Empty, "Invalid authenticator code.");
             return Page();
         }

@@ -56,7 +56,8 @@ public class PdfReportService
         foreach (var log in logs)
         {
             lines.Add($"{log.Timestamp:g} | {log.Action} | {log.EntityType}");
-            lines.Add($"User: {log.UserId}");
+            lines.Add($"User Email: {log.UserEmail}");
+            lines.Add($"User ID: {log.UserId}");
             lines.Add($"Details: {log.Description} {log.Details}");
             lines.Add($"IP: {log.IpAddress}");
             lines.Add(string.Empty);

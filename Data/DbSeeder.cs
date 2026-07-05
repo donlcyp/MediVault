@@ -191,6 +191,7 @@ public static class DbSeeder
             new AuditLog
             {
                 UserId = admin?.Id ?? "admin@medivault.com",
+                UserEmail = admin?.Email ?? admin?.UserName ?? "admin@medivault.com",
                 Action = "Login",
                 Description = "Administrator signed in",
                 EntityType = "User",
@@ -201,6 +202,7 @@ public static class DbSeeder
             new AuditLog
             {
                 UserId = admin?.Id ?? "admin@medivault.com",
+                UserEmail = admin?.Email ?? admin?.UserName ?? "admin@medivault.com",
                 Action = "Download",
                 Description = "Exported audit logs CSV",
                 EntityType = "AuditLog",
@@ -211,6 +213,7 @@ public static class DbSeeder
             new AuditLog
             {
                 UserId = doctor?.Id ?? "doctor@medivault.com",
+                UserEmail = doctor?.Email ?? doctor?.UserName ?? "doctor@medivault.com",
                 Action = "ViewRecord",
                 Description = "Viewed patient record #1",
                 EntityType = "PatientRecord",
@@ -221,6 +224,7 @@ public static class DbSeeder
             new AuditLog
             {
                 UserId = nurse?.Id ?? "nurse@medivault.com",
+                UserEmail = nurse?.Email ?? nurse?.UserName ?? "nurse@medivault.com",
                 Action = "UpdateRecord",
                 Description = "Added care note to patient record #4",
                 EntityType = "PatientRecord",
@@ -231,6 +235,7 @@ public static class DbSeeder
             new AuditLog
             {
                 UserId = doctor?.Id ?? "doctor@medivault.com",
+                UserEmail = doctor?.Email ?? doctor?.UserName ?? "doctor@medivault.com",
                 Action = "ScheduleAppointment",
                 Description = "Scheduled follow-up appointment",
                 EntityType = "Appointment",
@@ -241,6 +246,7 @@ public static class DbSeeder
             new AuditLog
             {
                 UserId = admin?.Id ?? "admin@medivault.com",
+                UserEmail = admin?.Email ?? admin?.UserName ?? "admin@medivault.com",
                 Action = "GenerateBill",
                 Description = "Generated billing record",
                 EntityType = "BillingRecord",
@@ -251,6 +257,7 @@ public static class DbSeeder
             new AuditLog
             {
                 UserId = nurse?.Id ?? "nurse@medivault.com",
+                UserEmail = nurse?.Email ?? nurse?.UserName ?? "nurse@medivault.com",
                 Action = "Logout",
                 Description = "Nurse signed out",
                 EntityType = "User",

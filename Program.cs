@@ -1,8 +1,11 @@
 using MediVault.Constants;
 using MediVault.Data;
 using MediVault.Services;
+using MediVault.Middleware;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,7 +20,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     {
-        options.SignIn.RequireConfirmedAccount = !builder.Environment.IsDevelopment();
+        options.SignIn.RequireConfirmedAccount = true;
         options.Lockout.AllowedForNewUsers = true;
         options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
         options.Lockout.MaxFailedAccessAttempts = 5;
@@ -27,7 +30,8 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
         options.Password.RequiredLength = 8;
     })
     .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<MediVaultContext>();
+    .AddEntityFrameworkStores<MediVaultContext>()
+    .AddSignInManager<CustomSignInManager>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<EncryptionService>();
@@ -36,7 +40,7 @@ builder.Services.AddScoped<RecordAccessService>();
 builder.Services.AddScoped<AuditQueryService>();
 builder.Services.AddScoped<PdfReportService>();
 builder.Services.AddScoped<AuditService>();
-builder.Services.AddTransient<IEmailSender, DevEmailSender>();
+builder.Services.AddTransient<IEmailSender, GmailEmailSender>();
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
@@ -66,6 +70,24 @@ using (var scope = app.Services.CreateScope())
         var context = services.GetRequiredService<MediVaultContext>();
         await context.Database.MigrateAsync();
         await EnsureDatabaseSchemaAsync(context);
+        
+        // Enable all existing users
+        var usersToEnable = await context.Users.Where(u => !u.IsEnabled).ToListAsync();
+        if (usersToEnable.Any())
+        {
+            var logger = services.GetRequiredService<ILogger<Program>>();
+            logger.LogInformation("Found {Count} users that need to be enabled", usersToEnable.Count);
+            
+            foreach (var user in usersToEnable)
+            {
+                user.IsEnabled = true;
+                logger.LogInformation("Enabling user: {Email}", user.Email);
+            }
+            
+            var updatedCount = await context.SaveChangesAsync();
+            logger.LogInformation("Successfully enabled {Count} existing users", updatedCount);
+        }
+        
         await DbSeeder.SeedAsync(services);
     }
     catch (Exception ex)
@@ -81,9 +103,40 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler(errorApp =>
+    {
+        errorApp.Run(async context =>
+        {
+            var exceptionFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+            var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+            var requestPath = exceptionFeature?.Path ?? context.Request.Path.Value ?? "unknown";
+
+            logger.LogError(exceptionFeature?.Error, "Unhandled exception while processing {RequestPath}.", requestPath);
+
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+
+            if (context.Request.Path.StartsWithSegments("/api") || WantsJsonResponse(context.Request))
+            {
+                context.Response.ContentType = "application/problem+json";
+
+                var problemDetails = new ProblemDetails
+                {
+                    Status = StatusCodes.Status500InternalServerError,
+                    Title = "An unexpected error occurred.",
+                    Detail = "The request could not be completed because an unexpected server error occurred."
+                };
+
+                await context.Response.WriteAsJsonAsync(problemDetails);
+                return;
+            }
+
+            context.Response.Redirect("/Home/Error");
+        });
+    });
     app.UseHsts();
 }
+
+app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}");
 
 app.UseHttpsRedirection();
 app.Use(async (context, next) =>
@@ -104,6 +157,7 @@ app.Use(async (context, next) =>
 });
 app.UseRouting();
 app.UseAuthentication();
+app.UseMiddleware<UserEnabledMiddleware>();
 app.Use(async (context, next) =>
 {
     if (context.User.Identity?.IsAuthenticated == true && context.Request.Path == "/")
@@ -130,6 +184,13 @@ app.MapRazorPages()
 
 app.Run();
 
+static bool WantsJsonResponse(HttpRequest request)
+{
+    var acceptHeader = request.Headers.Accept.ToString();
+    return acceptHeader.Contains("application/json", StringComparison.OrdinalIgnoreCase)
+        || acceptHeader.Contains("application/problem+json", StringComparison.OrdinalIgnoreCase);
+}
+
 static async Task EnsureDatabaseSchemaAsync(MediVaultContext context)
 {
     await context.Database.ExecuteSqlRawAsync("""
@@ -148,6 +209,18 @@ static async Task EnsureDatabaseSchemaAsync(MediVaultContext context)
             ALTER TABLE [PatientRecords] ADD [IntegrityHash] nvarchar(max) NOT NULL
                 CONSTRAINT [DF_PatientRecords_IntegrityHash] DEFAULT(N'');
         END
+
+        IF COL_LENGTH('AuditLogs', 'UserEmail') IS NULL
+        BEGIN
+            ALTER TABLE [AuditLogs] ADD [UserEmail] nvarchar(256) NOT NULL
+                CONSTRAINT [DF_AuditLogs_UserEmail] DEFAULT(N'');
+        END
+
+        UPDATE al
+            SET al.UserEmail = COALESCE(au.Email, al.UserId)
+        FROM [AuditLogs] al
+        LEFT JOIN [AspNetUsers] au ON au.Id = al.UserId
+        WHERE al.UserEmail = N''
         """);
 
     await context.Database.ExecuteSqlRawAsync("""

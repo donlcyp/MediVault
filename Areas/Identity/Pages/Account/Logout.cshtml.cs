@@ -37,7 +37,7 @@ public class LogoutModel : PageModel
         var user = await _userManager.GetUserAsync(User);
         if (user != null)
         {
-            await _audit.LogAsync(user.Id, "Logout", $"User {user.Email} signed out", "User", user.Email ?? user.Id);
+            await _audit.LogAsync(user.Id, "Logout", "User signed out", "User", user.Email ?? user.Id);
         }
 
         await _signInManager.SignOutAsync();

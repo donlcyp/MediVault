@@ -43,7 +43,7 @@ public class AuditQueryService
     {
         if (!string.IsNullOrWhiteSpace(userId))
         {
-            query = query.Where(x => x.UserId.Contains(userId));
+            query = query.Where(x => x.UserId.Contains(userId) || x.UserEmail.Contains(userId));
         }
 
         if (!string.IsNullOrWhiteSpace(action))
@@ -93,12 +93,13 @@ public class AuditQueryService
         static string Csv(string value) => $"\"{(value ?? string.Empty).Replace("\"", "\"\"")}\"";
 
         var builder = new System.Text.StringBuilder();
-        builder.AppendLine("Timestamp,UserId,Action,EntityType,Description,Details,IpAddress");
+        builder.AppendLine("Timestamp,UserEmail,UserId,Action,EntityType,Description,Details,IpAddress");
 
         foreach (var log in logs)
         {
             builder.AppendLine(string.Join(",",
                 Csv(log.Timestamp.ToString("O")),
+                Csv(log.UserEmail),
                 Csv(log.UserId),
                 Csv(log.Action),
                 Csv(log.EntityType),

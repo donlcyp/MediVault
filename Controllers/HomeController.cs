@@ -22,8 +22,21 @@ public class HomeController : Controller
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
+    public IActionResult Error(int? statusCode = null)
     {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        var resolvedStatusCode = statusCode ?? HttpContext.Response.StatusCode;
+
+        if (resolvedStatusCode < StatusCodes.Status400BadRequest)
+        {
+            resolvedStatusCode = StatusCodes.Status500InternalServerError;
+        }
+
+        Response.StatusCode = resolvedStatusCode;
+
+        return View(new ErrorViewModel
+        {
+            RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
+            StatusCode = resolvedStatusCode
+        });
     }
 }

@@ -23,7 +23,7 @@
         })();
     </script>
 </head>
-<body>
+<body class="app-shell">
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark navbar-custom shadow-sm">
             <div class="container-fluid">
@@ -68,8 +68,9 @@
         </nav>
     </header>
     
-    <div class="container-fluid">
-        <main role="main" class="pb-5 min-vh-100">
+    <div class="app-surface">
+        <main role="main" class="app-main pb-5 min-vh-100">
+            <partial name="_FlashMessages" />
             @RenderBody()
         </main>
     </div>
@@ -100,6 +101,7 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Theme toggle functionality
             const themeBtn = document.getElementById('themeToggleBtn');
             const themeIcon = document.getElementById('themeToggleIcon');
             
@@ -126,6 +128,117 @@
                         themeIcon.className = 'bi bi-moon-stars-fill text-gradient';
                         themeIcon.style.color = '';
                     }
+                }
+            }
+
+            // Custom dropdown implementation with enhanced debugging
+            const dropdownTrigger = document.getElementById('customUserDropdown');
+            const dropdownMenu = document.getElementById('customDropdownMenu');
+            
+            console.log('Dropdown elements found:', {
+                trigger: !!dropdownTrigger,
+                menu: !!dropdownMenu
+            });
+            
+            if (dropdownTrigger && dropdownMenu) {
+                let isOpen = dropdownMenu.classList.contains('show');
+                
+                // Toggle dropdown
+                dropdownTrigger.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Dropdown trigger clicked');
+                    
+                    isOpen = !isOpen;
+                    if (isOpen) {
+                        dropdownMenu.classList.add('show');
+                        dropdownTrigger.setAttribute('aria-expanded', 'true');
+                        console.log('Dropdown opened');
+                    } else {
+                        dropdownMenu.classList.remove('show');
+                        dropdownTrigger.setAttribute('aria-expanded', 'false');
+                        console.log('Dropdown closed');
+                    }
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!dropdownTrigger.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                        if (isOpen) {
+                            isOpen = false;
+                            dropdownMenu.classList.remove('show');
+                            dropdownTrigger.setAttribute('aria-expanded', 'false');
+                            console.log('Dropdown closed (outside click)');
+                        }
+                    }
+                });
+                
+                // Handle Account Settings link
+                const accountSettingsLink = dropdownMenu.querySelector('a[href*="Account/Manage"]');
+                if (accountSettingsLink) {
+                    accountSettingsLink.addEventListener('click', function(e) {
+                        console.log('Account Settings clicked - navigating to:', this.href);
+                        // Let the default navigation happen
+                    });
+                }
+                
+                // Handle logout form submission with multiple approaches
+                const logoutForm = dropdownMenu.querySelector('.logout-form-custom');
+                const logoutButton = dropdownMenu.querySelector('.logout-btn');
+                
+                console.log('Logout elements found:', {
+                    form: !!logoutForm,
+                    button: !!logoutButton
+                });
+                
+                if (logoutForm && logoutButton) {
+                    // Method 1: Button click handler
+                    logoutButton.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Logout button clicked - submitting form');
+                        console.log('Form action:', logoutForm.action);
+                        logoutForm.submit();
+                    });
+                    
+                    // Method 2: Form submit handler
+                    logoutForm.addEventListener('submit', function(e) {
+                        console.log('Logout form submitting');
+                        // Let the form submit normally
+                    });
+                    
+                    // Method 3: Direct form submission on mousedown (backup)
+                    logoutButton.addEventListener('mousedown', function(e) {
+                        console.log('Logout button mousedown');
+                    });
+                }
+                
+                // Additional safety: Make all dropdown items explicitly clickable
+                const allDropdownItems = dropdownMenu.querySelectorAll('.custom-dropdown-item');
+                allDropdownItems.forEach((item, index) => {
+                    item.style.pointerEvents = 'auto';
+                    item.style.cursor = 'pointer';
+                    console.log(`Dropdown item ${index + 1} made clickable:`, item.textContent.trim());
+                    
+                    // Add click debugging
+                    item.addEventListener('mouseenter', function() {
+                        console.log('Hovering over:', this.textContent.trim());
+                    });
+                });
+            }
+            
+            // Legacy logout form handler (safety net)
+            const legacyLogoutForm = document.getElementById('logoutForm');
+            if (legacyLogoutForm) {
+                console.log('Legacy logout form found');
+                const legacyLogoutButton = legacyLogoutForm.querySelector('button[type="submit"]');
+                if (legacyLogoutButton) {
+                    legacyLogoutButton.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Legacy logout button clicked');
+                        legacyLogoutForm.submit();
+                    });
                 }
             }
         });

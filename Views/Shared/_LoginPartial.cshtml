@@ -34,16 +34,17 @@
     }
 
     <!-- User Account Dropdown -->
-    <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2 px-3 py-2 rounded-3" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-light);">
+    <li class="nav-item user-menu-custom">
+        <button class="nav-link d-flex align-items-center gap-2 px-3 py-2 rounded-3 user-menu-trigger" type="button" id="customUserDropdown">
             <i class="bi bi-person-circle text-gradient" style="font-size: 1.15rem;"></i> 
-            <span class="d-none d-sm-inline">@User.Identity?.Name</span>
-        </a>
-        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom mt-2" aria-labelledby="userDropdown">
-            <li>
-                <div class="dropdown-header d-flex flex-column gap-1">
-                    <span class="text-muted small">Access Authorization</span>
-                    <div>
+            <span class="d-none d-sm-inline user-menu-name">@User.Identity?.Name</span>
+            <i class="bi bi-chevron-down ms-1" style="font-size: 0.8rem;"></i>
+        </button>
+        <div class="custom-dropdown-menu" id="customDropdownMenu">
+            <div class="custom-dropdown-content">
+                <div class="dropdown-header user-menu-header d-flex flex-column gap-2">
+                    <span class="text-muted small text-uppercase fw-semibold">Access Authorization</span>
+                    <div class="d-flex flex-wrap gap-2 align-items-center">
                         @if (primaryRole == Roles.SystemAdministrator)
                         {
                             <span class="badge-role badge-admin">Administrator</span>
@@ -65,23 +66,19 @@
                             <span class="badge bg-secondary text-muted">None</span>
                         }
                     </div>
+                    <span class="user-menu-email text-muted small">@User.Identity?.Name</span>
                 </div>
-            </li>
-            <li><hr class="dropdown-divider border-secondary opacity-25"></li>
-            <li>
-                <a class="dropdown-item d-flex align-items-center gap-2" asp-area="Identity" asp-page="/Account/Manage/Index">
+                <div class="dropdown-divider"></div>
+                <a class="custom-dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">
                     <i class="bi bi-person-gear"></i> Account Settings
                 </a>
-            </li>
-            <li><hr class="dropdown-divider border-secondary opacity-25"></li>
-            <li>
-                <form class="logout-form" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post" asp-antiforgery="true">
-                    <button type="submit" class="dropdown-item d-flex align-items-center gap-2 text-danger w-100">
+                <form class="logout-form-custom" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post" asp-antiforgery="true">
+                    <button type="submit" class="custom-dropdown-item logout-btn">
                         <i class="bi bi-box-arrow-right"></i> Sign Out
                     </button>
                 </form>
-            </li>
-        </ul>
+            </div>
+        </div>
     </li>
 }
 else

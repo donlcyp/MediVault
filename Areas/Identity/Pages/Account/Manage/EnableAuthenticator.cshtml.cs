@@ -140,7 +140,7 @@ public class EnableAuthenticatorModel : PageModel
         await _audit.LogAsync(
             userId,
             "TwoFactorEnabled",
-            $"User {user.Email} enabled authenticator-based MFA.",
+            "User enabled authenticator-based MFA.",
             "User",
             user.Email ?? userId);
 

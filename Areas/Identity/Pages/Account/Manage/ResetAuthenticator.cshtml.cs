@@ -52,7 +52,7 @@ public class ResetAuthenticatorModel : PageModel
             await _audit.LogAsync(
                 user.Id,
                 "TwoFactorResetBlocked",
-                $"Attempted to reset MFA for system administrator {user.Email}.",
+                "Attempted to reset MFA for system administrator",
                 "User",
                 user.Email ?? user.Id);
             return Forbid();
@@ -74,7 +74,7 @@ public class ResetAuthenticatorModel : PageModel
             await _audit.LogAsync(
                 user.Id,
                 "TwoFactorResetBlocked",
-                $"Attempted to reset MFA for system administrator {user.Email}.",
+                "Attempted to reset MFA for system administrator",
                 "User",
                 user.Email ?? user.Id);
             return Forbid();
@@ -87,7 +87,7 @@ public class ResetAuthenticatorModel : PageModel
         await _audit.LogAsync(
             userId,
             "TwoFactorReset",
-            $"User {user.Email} reset authenticator enrollment.",
+            "User reset authenticator enrollment.",
             "User",
             user.Email ?? userId);
 

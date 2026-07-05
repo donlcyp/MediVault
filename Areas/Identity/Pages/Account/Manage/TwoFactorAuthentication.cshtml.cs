@@ -91,7 +91,7 @@ public class TwoFactorAuthenticationModel : PageModel
         await _audit.LogAsync(
             user.Id,
             "TwoFactorBrowserForgotten",
-            $"User {user.Email} forgot this browser for MFA.",
+            "User forgot this browser for MFA.",
             "User",
             user.Email ?? user.Id);
         StatusMessage = "The current browser has been forgotten. When you login again from this browser you will be prompted for your 2fa code.";

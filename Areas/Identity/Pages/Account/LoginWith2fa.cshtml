@@ -5,68 +5,52 @@
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 
-<div class="tfa-login-wrapper">
-    <div class="tfa-login-card">
+<div class="container-fluid site-section">
+    <div class="auth-shell auth-shell--centered">
+        <section class="surface-panel auth-form auth-form--centered">
+            <div class="auth-form-inner">
+                <div class="auth-form-card">
+                    <span class="section-kicker"><i class="bi bi-shield-lock-fill"></i> Security checkpoint</span>
+                    <h1 class="auth-form-title mt-3 mb-2 fw-bold">Two-factor authentication</h1>
+                    <p class="auth-form-subtitle mb-4">Enter the 6-digit code from your authenticator app to continue.</p>
 
-        <!-- Animated shield icon -->
-        <div class="tfa-icon-wrap">
-            <div class="tfa-icon-ring"></div>
-            <div class="tfa-icon-inner">
-                <i class="bi bi-shield-lock-fill"></i>
+                    <form method="post" asp-route-returnUrl="@Model.ReturnUrl" id="tfa-login-form">
+                        <input asp-for="RememberMe" type="hidden" />
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger p-2 small mb-3" role="alert"></div>
+
+                        <div class="auth-field mb-3">
+                            <label class="form-label">Authenticator code</label>
+                            <input asp-for="Input.TwoFactorCode"
+                                   class="form-control form-input-custom"
+                                   autocomplete="one-time-code"
+                                   inputmode="numeric"
+                                   maxlength="7"
+                                   placeholder="000 000"
+                                   id="tfa-code-input" />
+                            <span asp-validation-for="Input.TwoFactorCode" class="text-danger small"></span>
+                        </div>
+
+                        <label class="form-check form-check-label d-flex align-items-center gap-2 mb-4" for="Input_RememberMachine">
+                            <input asp-for="Input.RememberMachine" class="form-check-input" id="Input_RememberMachine" />
+                            <span class="text-muted small">Remember this device for 30 days</span>
+                        </label>
+
+                        <button type="submit" class="w-100 btn btn-premium-primary py-3" id="tfa-submit">
+                            <i class="bi bi-arrow-right-circle-fill"></i>
+                            Verify &amp; Sign in
+                        </button>
+                    </form>
+
+                    <div class="auth-divider"></div>
+                    <div class="d-flex align-items-center gap-2 small text-muted">
+                        <i class="bi bi-life-preserver text-gradient"></i>
+                        <span>Lost your device?</span>
+                        <a id="recovery-code-login" asp-page="./LoginWithRecoveryCode" asp-route-returnUrl="@Model.ReturnUrl" class="auth-mini-link">Use a recovery code</a>
+                    </div>
+                </div>
             </div>
-        </div>
-
-        <div class="tfa-header">
-            <span class="settings-eyebrow">Security checkpoint</span>
-            <h1 class="tfa-title">Two-factor authentication</h1>
-            <p class="tfa-subtitle">Your account is protected. Enter the 6-digit code from your authenticator app to continue.</p>
-        </div>
-
-        <form method="post" asp-route-returnUrl="@Model.ReturnUrl" class="tfa-form" id="tfa-login-form">
-            <input asp-for="RememberMe" type="hidden" />
-            <div asp-validation-summary="ModelOnly" class="tfa-error-box" role="alert"></div>
-
-            <div class="tfa-code-field">
-                <label class="tfa-code-label">
-                    <i class="bi bi-key-fill"></i>
-                    Authenticator code
-                </label>
-                <input asp-for="Input.TwoFactorCode"
-                       class="tfa-code-input"
-                       autocomplete="one-time-code"
-                       inputmode="numeric"
-                       maxlength="7"
-                       placeholder="000 000"
-                       id="tfa-code-input" />
-                <span asp-validation-for="Input.TwoFactorCode" class="tfa-field-error"></span>
-            </div>
-
-            <label class="tfa-remember-label" for="Input_RememberMachine">
-                <input asp-for="Input.RememberMachine" class="tfa-remember-check" id="Input_RememberMachine" />
-                <span class="tfa-remember-toggle"></span>
-                <span>Remember this device for 30 days</span>
-            </label>
-
-            <button type="submit" class="tfa-submit-btn" id="tfa-submit">
-                <i class="bi bi-arrow-right-circle-fill"></i>
-                Verify &amp; Sign in
-            </button>
-        </form>
-
-        <div class="tfa-recovery-row">
-            <i class="bi bi-life-preserver"></i>
-            <span>Lost your device?
-                <a id="recovery-code-login" asp-page="./LoginWithRecoveryCode" asp-route-returnUrl="@Model.ReturnUrl" class="tfa-recovery-link">
-                    Sign in with a recovery code
-                </a>
-            </span>
-        </div>
-
+        </section>
     </div>
-
-    <!-- Decorative background blobs -->
-    <div class="tfa-blob tfa-blob-1"></div>
-    <div class="tfa-blob tfa-blob-2"></div>
 </div>
 
 @section Scripts {

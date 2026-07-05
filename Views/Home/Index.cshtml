@@ -2,81 +2,102 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="container-fluid py-5">
-    <div class="row align-items-center g-5 py-4">
-        <!-- Hero Text -->
-        <div class="col-lg-6">
-            <div class="badge-role badge-admin mb-3 d-inline-flex align-items-center gap-2">
-                <i class="bi bi-shield-fill-check"></i> Enterprise Grade Security
-            </div>
-            <h1 class="display-3 fw-bold mb-3 leading-tight">
-                Secure Patient Records <br/>
-                <span class="text-gradient">Fully Encrypted.</span>
-            </h1>
-            <p class="lead text-muted mb-4" style="max-width: 550px; font-size: 1.15rem;">
-                MediVault is a next-generation Hospital Information System implementing application-level AES-256 encryption, strict Role-Based Access Control, and real-time verifiable cryptographic audit trails.
-            </p>
-            <div class="d-flex flex-wrap gap-3">
-                <a class="btn-premium-primary px-4 py-3 text-decoration-none" asp-area="Identity" asp-page="/Account/Login">
-                    <i class="bi bi-box-arrow-in-right"></i> Access Portal
-                </a>
-            </div>
-        </div>
+<div class="container-fluid site-section">
+    <div class="hero-grid">
+        <section class="surface-panel hero-panel">
+            <div class="d-flex flex-column gap-4">
+                <div>
+                    <span class="section-kicker"><i class="bi bi-shield-check"></i> Clinical security platform</span>
+                    <h1 class="page-title mt-3 mb-3 fw-bold">
+                        Secure patient care with <span class="text-gradient">encryption, identity, and auditability</span>
+                    </h1>
+                    <p class="page-copy mb-0">
+                        MediVault is a hospital information system built around encrypted patient data, role-specific access, and an audit trail that records every meaningful action without losing clinical clarity.
+                    </p>
+                </div>
 
-        <!-- Brand logo hero -->
-        <div class="col-lg-6 text-center position-relative">
-            <div class="position-absolute top-50 start-50 translate-middle" style="width: 400px; height: 400px; background: radial-gradient(circle, rgba(0,242,254,0.12) 0%, transparent 70%); z-index: -1;"></div>
-            <img src="~/images/medivault-logo.png"
-                 alt="MediVault logo"
-                 width="280"
-                 height="280"
-                 class="img-fluid"
-                 style="animation: float 6s ease-in-out infinite; filter: drop-shadow(0 0 25px rgba(0, 242, 254, 0.25)); object-fit: contain;" />
-        </div>
+                <div class="d-flex flex-wrap gap-3">
+                    <a class="btn-premium-primary px-4 py-3 text-decoration-none" asp-area="Identity" asp-page="/Account/Login">
+                        <i class="bi bi-box-arrow-in-right"></i> Open Portal
+                    </a>
+                    <a class="btn-premium-secondary px-4 py-3 text-decoration-none" asp-controller="Home" asp-action="Privacy">
+                        <i class="bi bi-shield-lock"></i> Privacy Model
+                    </a>
+                </div>
+
+                <div class="hero-metrics">
+                    <div class="metric-card">
+                        <strong>Encrypted</strong>
+                        <span>Clinical fields protected at rest</span>
+                    </div>
+                    <div class="metric-card">
+                        <strong>Role-aware</strong>
+                        <span>Doctor, Nurse, Records, Admin</span>
+                    </div>
+                    <div class="metric-card">
+                        <strong>Audited</strong>
+                        <span>Logins, edits, downloads, failures</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="surface-panel auth-hero">
+            <div class="auth-hero-panel">
+                <div>
+                    <div class="auth-hero-badge mb-3"><i class="bi bi-stars"></i> Secure clinical workflow</div>
+                    <div class="auth-hero-icon mb-3">
+                        <i class="bi bi-heart-pulse-fill"></i>
+                    </div>
+                    <h2 class="auth-hero-title mb-3 fw-bold">Designed for hospital teams</h2>
+                    <p class="auth-hero-copy mb-0">
+                        From patient records to billing and audit review, every major workflow uses consistent surfaces, strong contrast, and clear action hierarchy.
+                    </p>
+                </div>
+
+                <div class="auth-benefits mb-2">
+                    <div class="auth-benefit">
+                        <i class="bi bi-lock-fill"></i>
+                        <div>
+                            <strong class="d-block mb-1">Protected records</strong>
+                            <span class="text-muted small">Sensitive fields remain encrypted until a valid role unlocks them.</span>
+                        </div>
+                    </div>
+                    <div class="auth-benefit">
+                        <i class="bi bi-clock-history"></i>
+                        <div>
+                            <strong class="d-block mb-1">Traceable activity</strong>
+                            <span class="text-muted small">The audit trail captures who accessed data, when, and from where.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 
-    <!-- Core Security Pillars -->
-    <div class="row g-4 mb-5 mt-4">
-        <div class="col-md-4">
-            <div class="card-custom h-100 p-4">
-                <div class="d-inline-flex p-3 rounded-3 mb-3" style="background: rgba(0, 242, 254, 0.08); color: var(--accent-cyan);">
-                    <i class="bi bi-lock-fill fs-3"></i>
+    <section class="mt-4">
+        <div class="feature-grid">
+            <article class="feature-card">
+                <div class="icon-bubble" style="background: rgba(0, 242, 254, 0.08); color: var(--accent-cyan);">
+                    <i class="bi bi-lock-fill fs-4"></i>
                 </div>
-                <h4 class="card-title">AES-256 Encryption</h4>
-                <p class="text-muted mb-0">
-                    Patient medical history, diagnoses, and prescriptions are encrypted in the database at the application level. Decryption happens dynamically only when a user with proper clearance accesses the record.
-                </p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card-custom h-100 p-4">
-                <div class="d-inline-flex p-3 rounded-3 mb-3" style="background: rgba(99, 102, 241, 0.08); color: var(--color-patient);">
-                    <i class="bi bi-person-check-fill fs-3"></i>
+                <h4 class="mb-2">AES-256 encryption</h4>
+                <p>Clinical history, diagnoses, and prescriptions are encrypted in the database and only decrypted for authorized users.</p>
+            </article>
+            <article class="feature-card">
+                <div class="icon-bubble" style="background: rgba(99, 102, 241, 0.08); color: var(--color-patient);">
+                    <i class="bi bi-person-check-fill fs-4"></i>
                 </div>
-                <h4 class="card-title">Granular Access Control</h4>
-                <p class="text-muted mb-0">
-                    Strict role configurations differentiate between Doctors, Nurses, Records Officers, and Admins. For example, system administrators have zero visibility into patient medical records.
-                </p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card-custom h-100 p-4">
-                <div class="d-inline-flex p-3 rounded-3 mb-3" style="background: rgba(16, 185, 129, 0.08); color: var(--color-nurse);">
-                    <i class="bi bi-file-earmark-lock2-fill fs-3"></i>
+                <h4 class="mb-2">Granular access control</h4>
+                <p>Doctors, nurses, records officers, and administrators each see only the data their workflow requires.</p>
+            </article>
+            <article class="feature-card">
+                <div class="icon-bubble" style="background: rgba(16, 185, 129, 0.08); color: var(--color-nurse);">
+                    <i class="bi bi-file-earmark-lock2-fill fs-4"></i>
                 </div>
-                <h4 class="card-title">Immutable Audit Trails</h4>
-                <p class="text-muted mb-0">
-                    Every read operation, data modification, key shift, and login attempt creates a detailed audit event. These events cannot be altered or deleted by any user level.
-                </p>
-            </div>
+                <h4 class="mb-2">Immutable audit trail</h4>
+                <p>Reads, writes, exports, login events, and integrity failures are recorded for investigation and accountability.</p>
+            </article>
         </div>
-    </div>
-
+    </section>
 </div>
-
-<style>
-    @@keyframes float {
-        0%, 100% { transform: translateY(0px) rotate(0deg); }
-        50% { transform: translateY(-12px) rotate(1deg); }
-    }
-</style>
