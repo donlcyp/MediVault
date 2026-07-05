@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -15,7 +15,9 @@ namespace MediVault.Migrations
                 BEGIN
                     ALTER TABLE [AuditLogs] ADD [UserEmail] nvarchar(max) NOT NULL CONSTRAINT [DF_AuditLogs_UserEmail] DEFAULT(N'');
                 END
+                """);
 
+            migrationBuilder.Sql("""
                 UPDATE al
                     SET al.UserEmail = COALESCE(au.Email, al.UserId)
                 FROM [AuditLogs] al
